@@ -39,6 +39,9 @@ Only move to a service-backed extension if the requirement truly needs:
 - `scripts/install-into-sandbox.sh`
 - `scripts/upgrade-in-sandbox.sh`
 - `scripts/verify-extension.sh`
+- `scripts/build-bundle.go`
+- `scripts/sign-bundle.go`
+- `scripts/publish-bundle-oci.sh`
 
 ## First Pass Workflow
 
@@ -65,7 +68,7 @@ Recommended loop:
 ```bash
 mbr auth login --url https://app.yourdomain.com
 mbr workspaces list
-mbr extensions install . --workspace ws_sandbox --license-token lic_sandbox
+mbr extensions install . --workspace ws_sandbox
 mbr extensions list --workspace ws_sandbox
 mbr extensions validate EXTENSION_ID
 mbr extensions activate EXTENSION_ID
@@ -78,7 +81,6 @@ The helper scripts wrap the same lifecycle for agents:
 ```bash
 export MBR_URL=https://app.yourdomain.com
 export MBR_WORKSPACE_ID=ws_sandbox
-export MBR_LICENSE_TOKEN=lic_sandbox
 ./scripts/install-into-sandbox.sh .
 
 export MBR_EXTENSION_ID=ext_installed_id
@@ -86,10 +88,13 @@ export MBR_EXTENSION_ID=ext_installed_id
 ./scripts/upgrade-in-sandbox.sh .
 ```
 
+If your organization is using a controlled instance-bound bundle flow, you can
+still export `MBR_LICENSE_TOKEN` before running the helper scripts.
+
 If the extension changes:
 
 ```bash
-mbr extensions upgrade . --id EXTENSION_ID --license-token lic_sandbox
+mbr extensions upgrade . --id EXTENSION_ID
 mbr extensions monitor --id EXTENSION_ID
 ```
 
@@ -98,6 +103,9 @@ If something looks wrong:
 ```bash
 mbr extensions deactivate EXTENSION_ID
 ```
+
+Public signed bundles and local source installs do not need an instance-bound
+token. Keep `--license-token` for controlled instance-bound bundle flows.
 
 ## Review Rule
 
@@ -110,7 +118,35 @@ Do not activate a self-built extension outside a sandbox workspace until both of
 
 This template can be installed directly from the source directory during development.
 
-For marketplace or repeatable delivery later, package it into a bundle and install the bundle by file, HTTPS URL, OCI ref, or marketplace alias.
+For repeatable delivery later, package it into a signed bundle and install the
+bundle by file, HTTPS URL, or OCI ref. Marketplace aliases are optional and
+only matter when a private catalog is in use.
+
+## Publication Rule
+
+Under the current public Move Big Rocks license and distribution policy, custom
+extensions can stay private or be given away for free. Selling Move Big Rocks
+extensions requires separate written permission from Move Big Rocks BV.
+
+The bundled publication tooling supports both public signed bundles and
+instance-bound signed bundles:
+
+```bash
+go run ./scripts/build-bundle.go --source . --out dist/my-extension.bundle.json
+go run ./scripts/sign-bundle.go \
+  --bundle dist/my-extension.bundle.json \
+  --out dist/my-extension.signed.bundle.json \
+  --key-id demandops-public-1 \
+  --private-key-env MBR_EXTENSION_SIGNING_PRIVATE_KEY_B64
+./scripts/publish-bundle-oci.sh \
+  --bundle dist/my-extension.signed.bundle.json \
+  --image ghcr.io/movebigrocks/mbr-ext-my-extension \
+  --tag v0.1.0
+```
+
+If you are publishing a free public bundle, you do not need an instance-bound
+license claim. If you are publishing a controlled private bundle, pass
+`--instance-id` and `--license-token` to `sign-bundle.go`.
 
 ## What "Done" Means
 

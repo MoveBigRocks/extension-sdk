@@ -3,14 +3,18 @@
 This tree is the canonical Move Big Rocks extension-SDK layout for building extensions
 on top of Move Big Rocks, the AI-native service operations platform.
 
-It is the canonical starting point for a private custom extension repo inside
-the public Move Big Rocks core repo.
+It is licensed under BSL 1.1 with the same no-resale rule used across the
+public Move Big Rocks code and extension surfaces. See `LICENSE`.
+
+It is the canonical starting point for a custom extension repo that lives
+outside the public Move Big Rocks core repo.
 
 ## What This Source Tree Is
 
 This source tree is:
 
 - the starting point for private custom-extension repos
+- the starting point for free public extensions built on the same contract
 - the authoring contract for builder workflows
 - the place agents and humans should read before creating a custom extension repo
 
@@ -36,12 +40,52 @@ What this template gives you:
 - one sandbox install script
 - one sandbox upgrade script
 - one activation and monitor script
+- one bundle build script
+- one bundle signing script
+- one OCI publish script
 
 This template is intentionally the simplest safe authoring path:
 
 - workspace-scoped
 - standard-risk
 - bundle-first
+
+## Distribution Model
+
+This template is meant to support the current public Move Big Rocks extension
+policy:
+
+- build your extension privately by default
+- package it as a signed bundle for repeatable delivery
+- install it from source, a local bundle file, an HTTPS URL, or an OCI ref
+- keep it private or give it away for free if you decide to publish it
+- do not plan on selling Move Big Rocks extensions without separate written
+  permission from Move Big Rocks BV
+
+## Public Bundle Tooling
+
+The SDK now includes the same basic tooling the first-party public bundle flow
+uses:
+
+```bash
+go run ./scripts/build-bundle.go --source . --out dist/my-extension.bundle.json
+go run ./scripts/sign-bundle.go \
+  --bundle dist/my-extension.bundle.json \
+  --out dist/my-extension.signed.bundle.json \
+  --key-id demandops-public-1 \
+  --private-key-env MBR_EXTENSION_SIGNING_PRIVATE_KEY_B64
+./scripts/publish-bundle-oci.sh \
+  --bundle dist/my-extension.signed.bundle.json \
+  --image ghcr.io/movebigrocks/mbr-ext-my-extension \
+  --tag v0.1.0
+```
+
+For a public signed bundle, omit `--instance-id` and `--license-token` from the
+signing step. For an instance-bound signed bundle, pass both.
+
+If you publish to GHCR, remember that the first package publication may still
+need its visibility changed to `Public` in GitHub Packages before anonymous
+pulls work as intended.
 
 If you need service-backed behavior later, keep the same repo shape and add:
 
