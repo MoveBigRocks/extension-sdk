@@ -45,6 +45,7 @@ if [[ -z "$tag" ]]; then
 fi
 
 oras push "${image}:${tag}" \
+  --disable-path-validation \
   --artifact-type application/vnd.mbr.extension.bundle.v1+json \
   "${bundle}:application/vnd.mbr.extension.bundle.v1+json"
 
