@@ -40,6 +40,7 @@ Only move to a service-backed extension if the requirement truly needs:
 - `scripts/upgrade-in-sandbox.sh`
 - `scripts/verify-extension.sh`
 - `scripts/build-bundle.go`
+- `scripts/generate-signing-key.go`
 - `scripts/sign-bundle.go`
 - `scripts/publish-bundle-oci.sh`
 
@@ -132,6 +133,11 @@ The bundled publication tooling supports both public signed bundles and
 instance-bound signed bundles:
 
 ```bash
+go run ./scripts/generate-signing-key.go \
+  --publisher DemandOps \
+  --key-id demandops-public-1 \
+  --seed-out secrets/demandops-public-1.seed.b64 \
+  --trusted-publishers-out dist/demandops-public-1.publisher.json
 go run ./scripts/build-bundle.go --source . --out dist/my-extension.bundle.json
 go run ./scripts/sign-bundle.go \
   --bundle dist/my-extension.bundle.json \
@@ -147,6 +153,10 @@ go run ./scripts/sign-bundle.go \
 If you are publishing a free public bundle, you do not need an instance-bound
 license claim. If you are publishing a controlled private bundle, pass
 `--instance-id` and `--license-token` to `sign-bundle.go`.
+
+Put the generated seed into your CI or publishing environment as
+`MBR_EXTENSION_SIGNING_PRIVATE_KEY_B64`. Put the generated trusted publisher
+JSON into the instance config as `EXTENSION_TRUSTED_PUBLISHERS_JSON`.
 
 ## What "Done" Means
 

@@ -41,6 +41,7 @@ What this template gives you:
 - one sandbox upgrade script
 - one activation and monitor script
 - one bundle build script
+- one signing-key generation script
 - one bundle signing script
 - one OCI publish script
 
@@ -68,6 +69,11 @@ The SDK now includes the same basic tooling the first-party public bundle flow
 uses:
 
 ```bash
+go run ./scripts/generate-signing-key.go \
+  --publisher DemandOps \
+  --key-id demandops-public-1 \
+  --seed-out secrets/demandops-public-1.seed.b64 \
+  --trusted-publishers-out dist/demandops-public-1.publisher.json
 go run ./scripts/build-bundle.go --source . --out dist/my-extension.bundle.json
 go run ./scripts/sign-bundle.go \
   --bundle dist/my-extension.bundle.json \
@@ -82,6 +88,10 @@ go run ./scripts/sign-bundle.go \
 
 For a public signed bundle, omit `--instance-id` and `--license-token` from the
 signing step. For an instance-bound signed bundle, pass both.
+
+The generated seed belongs in your publishing environment as
+`MBR_EXTENSION_SIGNING_PRIVATE_KEY_B64`. The generated trusted-publisher JSON
+belongs in the instance config as `EXTENSION_TRUSTED_PUBLISHERS_JSON`.
 
 If you publish to GHCR, remember that the first package publication may still
 need its visibility changed to `Public` in GitHub Packages before anonymous
