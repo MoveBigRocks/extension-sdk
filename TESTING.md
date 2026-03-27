@@ -4,9 +4,11 @@ This document explains how to think about extension verification today, what is
 already enforced by the platform, what is missing for external extension
 authors, and what the recommended testing stack should be.
 
-For the broader cross-repo roadmap, current first-party audit, and planned SDK
-and platform changes, also see
-`../platform/docs/EXTENSION_AUTHORING_AND_VALIDATION_PLAN.md`.
+For the durable platform-side references behind this testing model, see:
+
+- `../platform/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md`
+- `../platform/docs/AGENT_CLI.md`
+- `../platform/docs/EXTENSION_SECURITY_MODEL.md`
 
 ## Short Version
 
