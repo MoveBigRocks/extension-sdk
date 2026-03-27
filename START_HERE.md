@@ -73,11 +73,21 @@ mbr extensions lint . --json
 mbr auth login --url https://app.yourdomain.com
 mbr workspaces list
 mbr extensions verify . --workspace ws_sandbox --json
+mbr extensions nav --instance --json
+mbr extensions widgets --instance --json
 mbr extensions skills list --id EXTENSION_ID
 ```
 
 Then read `TESTING.md` and make sure the extension can prove the main workflow,
 not just install and activate cleanly.
+
+Important rule for workspace-scoped admin pages:
+
+- do not assume the user will always have a live workspace session context
+- an instance admin with no active workspace should still be able to discover
+  the extension and open a working entrypoint
+- if your admin UI is static-asset based and calls workspace-bound APIs, carry
+  the `?workspace=...` hint through those API requests
 
 The helper scripts wrap the same lifecycle for agents:
 
@@ -172,5 +182,7 @@ An extension is only done when:
 - activation succeeds
 - monitor reports healthy
 - `extension.contract.json` matches the real extension surface
+- `mbr extensions nav --instance --json` and `mbr extensions widgets --instance --json`
+  still show the extension when that makes sense
 - the main workflow can be exercised without undocumented steps
 - the threat model and review checklist are complete

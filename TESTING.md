@@ -16,6 +16,8 @@ checks:
 - `mbr extensions lint SOURCE_DIR`
 - `mbr extensions lint SOURCE_DIR --write-contract`
 - `mbr extensions verify SOURCE_DIR --workspace WORKSPACE_ID`
+- `mbr extensions nav --instance --json`
+- `mbr extensions widgets --instance --json`
 - install from source or bundle
 - `mbr extensions validate --id EXTENSION_ID`
 - `mbr extensions activate --id EXTENSION_ID`
@@ -40,6 +42,8 @@ The current system is weakest at:
 - reusable public harnesses that mirror first-party extension tests
 - browser-level checks that prove the extension actually renders and appears in
   the admin shell
+- explicit guidance for static admin pages that must keep working for instance
+  admins without a live workspace context
 
 ## What Already Exists
 
@@ -59,6 +63,8 @@ It runs:
   is set
 - `mbr extensions widgets --workspace WORKSPACE_ID --json` when
   `MBR_WORKSPACE_ID` is set
+- `mbr extensions nav --instance --json`
+- `mbr extensions widgets --instance --json`
 
 That gives you a post-install smoke loop, but it is only one layer.
 
@@ -195,6 +201,10 @@ The SDK now has a public contract-verification layer.
      assets
    - resolved admin navigation matches the contract
    - resolved dashboard widgets match the contract
+   - instance-admin navigation still exposes the extension without a workspace
+     selection when applicable
+   - instance-admin dashboard widgets still expose the extension without a
+     workspace selection when applicable
    - seeded resources exist and still match the manifest
 
 4. Contract assertions file in the extension repo
@@ -214,6 +224,15 @@ The SDK now has a public contract-verification layer.
 
 This is the missing bridge between the internal platform contract and the
 external extension authoring lifecycle.
+
+For workspace-scoped admin pages, the current platform rule is:
+
+- service-backed admin pages receive the resolved install workspace even when an
+  instance admin opens them without an active workspace
+- instance-admin navigation hrefs for workspace-scoped installs should include a
+  workspace hint so the intended install is unambiguous
+- static asset admin pages that call workspace-bound APIs should preserve that
+  workspace hint on their own API requests
 
 ### Layer 2: Sandbox smoke tests
 
@@ -262,6 +281,8 @@ The platform now exposes the main proof surfaces external authors were missing:
   `seededResources`.
 - `mbr extensions nav --workspace WORKSPACE_ID --json`
 - `mbr extensions widgets --workspace WORKSPACE_ID --json`
+- `mbr extensions nav --instance --json`
+- `mbr extensions widgets --instance --json`
 
 That means authors and agents can now prove:
 

@@ -9,8 +9,10 @@ Mark each item before production activation.
 - The extension installs from the source directory.
 - `mbr extensions validate --id EXTENSION_ID` passes.
 - `mbr extensions show --id EXTENSION_ID --json` shows the expected resolved navigation, widgets, and seeded resources.
+- `mbr extensions nav --instance --json` and `mbr extensions widgets --instance --json` still expose the extension when applicable.
 - `mbr extensions monitor --id EXTENSION_ID` reports healthy.
 - The main admin and public workflows were exercised in a sandbox workspace.
+- The instance-admin/no-workspace entrypoint was exercised for any workspace-scoped admin UI.
 - The threat model is complete.
 - The extension does not request privileged behavior unnecessarily.
 - Rollback and deactivate steps are known.

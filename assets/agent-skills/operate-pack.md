@@ -14,9 +14,18 @@ Use this skill when an operator asks an agent to work with this extension.
    - `mbr extensions show --id EXTENSION_ID --json`
    - `mbr extensions nav --workspace WORKSPACE_ID --json`
    - `mbr extensions widgets --workspace WORKSPACE_ID --json`
+   - `mbr extensions nav --instance --json`
+   - `mbr extensions widgets --instance --json`
    - `mbr extensions monitor --id EXTENSION_ID`
 5. Exercise the main admin page and any public route.
 6. Only then activate or keep it active in production.
+
+For workspace-scoped admin pages, explicitly check the instance-admin case:
+
+- the extension still appears in instance navigation without a workspace selected
+- the instance-admin entrypoint opens a working page instead of a 404 or empty shell
+- if the page is static-asset based and calls workspace-bound APIs, its API calls
+  preserve the `?workspace=...` hint
 
 ## Do not do these blindly
 

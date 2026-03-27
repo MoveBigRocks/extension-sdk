@@ -34,7 +34,14 @@ The default contract-first loop is now:
 ```bash
 mbr extensions lint . --json
 mbr extensions verify . --workspace ws_preview --json
+mbr extensions nav --instance --json
+mbr extensions widgets --instance --json
 ```
+
+Treat instance-admin behavior as part of the contract, not a nice-to-have. If a
+workspace-scoped extension exposes admin pages, an instance admin with no active
+workspace should still see the pack in instance navigation and open a working
+entrypoint.
 
 If you intentionally change the declared extension surface, refresh the
 contract file and review the diff:
@@ -49,6 +56,7 @@ What this template gives you:
 - one testing and verification guide
 - one machine-readable `extension.contract.json`
 - one proof-oriented validation loop for resolved navigation, widgets, and seeded resources
+- one explicit instance-admin/no-workspace validation expectation
 - one valid bundle-first `manifest.json`
 - one minimal admin page
 - one minimal public page
