@@ -3,9 +3,10 @@
 This tree is the canonical Move Big Rocks extension-SDK layout for building extensions
 on top of Move Big Rocks, the AI-native service operations platform.
 
-It is licensed under the MBR Source Code Available License 1.0 with the same
-no-commercialization rule used across the public Move Big Rocks code and
-extension surfaces. See `LICENSE`.
+It is licensed under the MBR Source Code Available License 1.0. Teams may use
+and modify it for their own company, use the first-party extensions, and build
+their own extensions, but may not sell the platform, extensions, derivative
+works, or hosted access without separate written permission. See `LICENSE`.
 
 It is the canonical starting point for a custom extension repo that lives
 outside the public Move Big Rocks core repo.
