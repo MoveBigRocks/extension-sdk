@@ -4,13 +4,19 @@ Use this skill when an operator asks an agent to work with this extension.
 
 ## Default workflow
 
-1. Inspect the manifest and current config.
-2. Install or upgrade the pack in a sandbox workspace first.
-3. Run:
-   - `mbr extensions validate EXTENSION_ID`
+1. Inspect the manifest, `extension.contract.json`, and current config.
+2. Run `mbr extensions lint . --json`.
+3. Install or upgrade the pack in a sandbox workspace first, or use `mbr extensions verify . --workspace WORKSPACE_ID --json`.
+4. Run:
+   - `mbr extensions verify . --workspace WORKSPACE_ID --json`
+   - or, for an already-installed pack:
+   - `mbr extensions validate --id EXTENSION_ID`
+   - `mbr extensions show --id EXTENSION_ID --json`
+   - `mbr extensions nav --workspace WORKSPACE_ID --json`
+   - `mbr extensions widgets --workspace WORKSPACE_ID --json`
    - `mbr extensions monitor --id EXTENSION_ID`
-4. Exercise the main admin page and any public route.
-5. Only then activate or keep it active in production.
+5. Exercise the main admin page and any public route.
+6. Only then activate or keep it active in production.
 
 ## Do not do these blindly
 

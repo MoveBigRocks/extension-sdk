@@ -27,10 +27,28 @@ This source tree is not:
 Start here:
 
 - [START_HERE.md](START_HERE.md)
+- [TESTING.md](TESTING.md)
+
+The default contract-first loop is now:
+
+```bash
+mbr extensions lint . --json
+mbr extensions verify . --workspace ws_preview --json
+```
+
+If you intentionally change the declared extension surface, refresh the
+contract file and review the diff:
+
+```bash
+mbr extensions lint . --write-contract --json
+```
 
 What this template gives you:
 
 - one clear agent handoff file
+- one testing and verification guide
+- one machine-readable `extension.contract.json`
+- one proof-oriented validation loop for resolved navigation, widgets, and seeded resources
 - one valid bundle-first `manifest.json`
 - one minimal admin page
 - one minimal public page

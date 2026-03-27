@@ -6,6 +6,7 @@ EXTENSION_SOURCE="${1:-.}"
 : "${MBR_URL:?Set MBR_URL to your Move Big Rocks instance URL}"
 : "${MBR_WORKSPACE_ID:?Set MBR_WORKSPACE_ID to the sandbox workspace ID}"
 
+mbr extensions lint "${EXTENSION_SOURCE}" --json >/dev/null
 mbr auth whoami --url "${MBR_URL}" >/dev/null
 install_args=(
   "${EXTENSION_SOURCE}"

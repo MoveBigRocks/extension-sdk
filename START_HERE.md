@@ -31,9 +31,11 @@ Only move to a service-backed extension if the requirement truly needs:
 ## Files That Matter
 
 - `manifest.json`
+- `extension.contract.json`
 - `assets/admin/dashboard.html`
 - `assets/public/index.html`
 - `assets/agent-skills/operate-pack.md`
+- `TESTING.md`
 - `security/threat-model.md`
 - `security/review-checklist.md`
 - `scripts/install-into-sandbox.sh`
@@ -67,15 +69,15 @@ Assume:
 Recommended loop:
 
 ```bash
+mbr extensions lint . --json
 mbr auth login --url https://app.yourdomain.com
 mbr workspaces list
-mbr extensions install . --workspace ws_sandbox
-mbr extensions list --workspace ws_sandbox
-mbr extensions validate EXTENSION_ID
-mbr extensions activate EXTENSION_ID
-mbr extensions monitor --id EXTENSION_ID
+mbr extensions verify . --workspace ws_sandbox --json
 mbr extensions skills list --id EXTENSION_ID
 ```
+
+Then read `TESTING.md` and make sure the extension can prove the main workflow,
+not just install and activate cleanly.
 
 The helper scripts wrap the same lifecycle for agents:
 
@@ -84,8 +86,10 @@ export MBR_URL=https://app.yourdomain.com
 export MBR_WORKSPACE_ID=ws_sandbox
 ./scripts/install-into-sandbox.sh .
 
-export MBR_EXTENSION_ID=ext_installed_id
+export MBR_EXTENSION_SOURCE_DIR=.
 ./scripts/verify-extension.sh
+
+export MBR_EXTENSION_ID=ext_installed_id
 ./scripts/upgrade-in-sandbox.sh .
 ```
 
@@ -95,14 +99,14 @@ still export `MBR_LICENSE_TOKEN` before running the helper scripts.
 If the extension changes:
 
 ```bash
-mbr extensions upgrade . --id EXTENSION_ID
-mbr extensions monitor --id EXTENSION_ID
+mbr extensions lint . --write-contract --json
+mbr extensions verify . --workspace ws_sandbox --json
 ```
 
 If something looks wrong:
 
 ```bash
-mbr extensions deactivate EXTENSION_ID
+mbr extensions deactivate --id EXTENSION_ID
 ```
 
 Public signed bundles and local source installs do not need an instance-bound
@@ -163,8 +167,10 @@ JSON into the instance config as `EXTENSION_TRUSTED_PUBLISHERS_JSON`.
 An extension is only done when:
 
 - it installs cleanly
+- `mbr extensions lint .` passes
 - validation passes
 - activation succeeds
 - monitor reports healthy
+- `extension.contract.json` matches the real extension surface
 - the main workflow can be exercised without undocumented steps
 - the threat model and review checklist are complete
