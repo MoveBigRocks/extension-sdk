@@ -145,6 +145,9 @@ func collectMigrations(root string) ([]bundleMigration, error) {
 		if d.IsDir() {
 			return nil
 		}
+		if strings.ToLower(filepath.Ext(path)) != ".sql" {
+			return nil
+		}
 		content, err := os.ReadFile(path)
 		if err != nil {
 			return err
