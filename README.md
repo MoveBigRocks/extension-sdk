@@ -59,7 +59,7 @@ mbr extensions widgets --instance --json
 
 Treat instance-admin behavior as part of the contract, not a nice-to-have. If a
 workspace-scoped extension exposes admin pages, an instance admin with no active
-workspace should still see the pack in instance navigation and open a working
+workspace should still see the extension in instance navigation and open a working
 entrypoint.
 
 If you intentionally change the declared extension surface, refresh the
@@ -111,7 +111,7 @@ runtime slice:
 - `risk: standard`
 - `kind: product` or `kind: operational`
 
-That means this SDK is a good fit for workflow packs, internal dashboards,
+That means this SDK is a good fit for workflow extensions, internal dashboards,
 public forms or pages, and other bounded business capability slices.
 
 It is not the right starting point for the currently restricted generic paths:

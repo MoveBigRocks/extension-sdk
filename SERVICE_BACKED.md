@@ -13,7 +13,7 @@ Stay bundle-first unless the extension needs one or more of these:
 - a health endpoint checked by the core runtime
 - an owned `ext_*` PostgreSQL schema and migrations
 
-Moving to `service_backed` is about runtime needs, not prestige. If the pack is
+Moving to `service_backed` is about runtime needs, not prestige. If the extension is
 mostly static admin UI, public pages, workflow seeds, or bundled skills, keep
 it bundle-first.
 
@@ -27,7 +27,7 @@ The supported generic self-built path remains:
 - `risk: standard`
 - `kind: product` or `kind: operational`
 
-If the pack needs instance scope, privileged risk, identity behavior, or
+If the extension needs instance scope, privileged risk, identity behavior, or
 connector behavior, stop and use a separately controlled path instead of
 forcing it through the generic SDK flow.
 
@@ -70,9 +70,9 @@ Example intent:
   "storageClass": "owned_schema",
   "endpoints": [
     {
-      "name": "my-pack-health",
+      "name": "my-extension-health",
       "class": "health",
-      "mountPath": "/internal/extensions/my-pack/health",
+      "mountPath": "/internal/extensions/my-extension/health",
       "methods": ["GET"]
     }
   ]
@@ -95,7 +95,7 @@ That keeps the review surface understandable.
 
 ## Validation Loop
 
-Use this loop after converting the pack:
+Use this loop after converting the extension:
 
 ```bash
 mbr extensions lint . --json
@@ -120,10 +120,10 @@ At minimum, add:
 - a runtime health test
 - handler tests with `httptest` for each custom endpoint
 - tests for consumer or scheduled-job behavior where relevant
-- tests for migration collection if the pack owns SQL migrations
+- tests for migration collection if the extension owns SQL migrations
 - one sandbox workflow smoke check through `mbr extensions verify`
 
-If the pack has meaningful UI, add browser automation as well. See
+If the extension has meaningful UI, add browser automation as well. See
 [`examples/playwright/`](./examples/playwright/).
 
 ## Review Gates
@@ -136,6 +136,6 @@ Before activating a service-backed extension outside preview:
 - review external calls and secrets
 - confirm rollback or deactivation steps are explicit
 
-Service-backed packs are still bounded extensions on the shared base. They do
+Service-backed extensions are still bounded extensions on the shared base. They do
 not bypass shared auth, shared audit, shared routing, or the sanctioned core
 action paths.

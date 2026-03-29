@@ -21,7 +21,7 @@ Complete this before activating the extension outside a sandbox workspace.
 
 ## Data and storage
 
-- Which Move Big Rocks primitives does this pack touch?
+- Which Move Big Rocks primitives does this extension touch?
 - Does it create forms, queues, or automation?
 - Does it store secrets?
 - Does it call external systems?

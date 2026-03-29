@@ -70,7 +70,7 @@ separately controlled path is being used.
 - `extension.contract.json`
 - `assets/admin/dashboard.html`
 - `assets/public/index.html`
-- `assets/agent-skills/operate-pack.md`
+- `assets/agent-skills/operate-extension.md`
 - `TESTING.md`
 - `SERVICE_BACKED.md`
 - `security/threat-model.md`
@@ -93,7 +93,7 @@ separately controlled path is being used.
    - any example routes
 2. Keep the runtime bundle-first unless the requirement clearly needs more.
 3. Implement the first useful admin or public page.
-4. Add one bundled agent skill that explains how to operate the pack.
+4. Add one bundled agent skill that explains how to operate the extension.
 5. Threat-model the extension before activation.
 
 ## Local Development Loop

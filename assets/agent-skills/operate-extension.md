@@ -1,4 +1,4 @@
-# Operate This Pack
+# Operate This Extension
 
 Use this skill when an operator asks an agent to work with this extension.
 
@@ -6,10 +6,10 @@ Use this skill when an operator asks an agent to work with this extension.
 
 1. Inspect the manifest, `extension.contract.json`, and current config.
 2. Run `mbr extensions lint . --json`.
-3. Install or upgrade the pack in a sandbox workspace first, or use `mbr extensions verify . --workspace WORKSPACE_ID --json`.
+3. Install or upgrade the extension in a sandbox workspace first, or use `mbr extensions verify . --workspace WORKSPACE_ID --json`.
 4. Run:
    - `mbr extensions verify . --workspace WORKSPACE_ID --json`
-   - or, for an already-installed pack:
+   - or, for an already-installed extension:
    - `mbr extensions validate --id EXTENSION_ID`
    - `mbr extensions show --id EXTENSION_ID --json`
    - `mbr extensions nav --workspace WORKSPACE_ID --json`
@@ -29,6 +29,6 @@ For workspace-scoped admin pages, explicitly check the instance-admin case:
 
 ## Do not do these blindly
 
-- Do not activate a changed pack without reviewing the threat model.
+- Do not activate a changed extension without reviewing the threat model.
 - Do not install into production first when a sandbox is available.
-- Do not assume this pack is safe for privileged auth or connector behavior unless the manifest and review explicitly say so.
+- Do not assume this extension is safe for privileged auth or connector behavior unless the manifest and review explicitly say so.

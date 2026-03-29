@@ -42,15 +42,15 @@ func TestJSONMapDecodesCommandOutput(t *testing.T) {
 }
 
 func TestJSONArrayDecodesCommandOutput(t *testing.T) {
-	binary := writeStubCommand(t, `printf '[{"title":"Sample Ops Pack"}]'`)
+	binary := writeStubCommand(t, `printf '[{"title":"Sample Ops Extension"}]'`)
 	cli := CLI{Binary: binary}
 
 	value, err := cli.JSONArray(context.Background(), "extensions", "nav", "--instance", "--json")
 	if err != nil {
 		t.Fatalf("json array: %v", err)
 	}
-	if !ContainsKeyValue(value, "title", "Sample Ops Pack") {
-		t.Fatalf("expected nav output to contain Sample Ops Pack")
+	if !ContainsKeyValue(value, "title", "Sample Ops Extension") {
+		t.Fatalf("expected nav output to contain Sample Ops Extension")
 	}
 }
 

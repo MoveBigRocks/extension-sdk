@@ -1,25 +1,25 @@
 {
   "schemaVersion": 1,
-  "extensionSlug": "sample-ops-pack",
+  "extensionSlug": "sample-ops-extension",
   "resolvedAdminNavigation": [
     {
       "section": "Extensions",
-      "title": "Sample Ops Pack",
+      "title": "Sample Ops Extension",
       "icon": "blocks",
-      "href": "/extensions/sample-ops-pack",
-      "activePage": "sample-ops-pack"
+      "href": "/extensions/sample-ops-extension",
+      "activePage": "sample-ops-extension"
     }
   ],
   "publicPaths": [
-    "/sample-ops-pack"
+    "/sample-ops-extension"
   ],
   "adminPaths": [
-    "/extensions/sample-ops-pack"
+    "/extensions/sample-ops-extension"
   ],
   "commands": [
-    "sample-ops-pack.open-dashboard"
+    "sample-ops-extension.open-dashboard"
   ],
   "agentSkills": [
-    "operate-sample-ops-pack"
+    "operate-sample-ops-extension"
   ]
 }

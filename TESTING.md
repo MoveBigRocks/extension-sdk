@@ -76,7 +76,7 @@ The platform already validates:
 
 - required manifest fields
 - runtime/storage combinations
-- health endpoint requirements for service-backed packs
+- health endpoint requirements for service-backed extensions
 - asset existence for declared routes and endpoints
 - admin navigation pointing at real `admin_page` endpoints
 - dashboard widgets pointing at real `admin_page` endpoints
@@ -119,7 +119,7 @@ The core repo already has good test coverage for the extension system itself:
 - admin navigation resolution tests
 - route resolution tests
 - install/activate/customize tests
-- first-party pack install/activate tests
+- first-party extension install/activate tests
 
 Relevant files:
 
@@ -133,7 +133,7 @@ Relevant files:
 
 The strongest helpers today live inside `platform/internal/...`.
 
-That means first-party packs can benefit from rich regression tests, but a
+That means first-party extensions can benefit from rich regression tests, but a
 third-party or customer extension repo built from this SDK cannot directly
 reuse the same helpers.
 
@@ -159,7 +159,7 @@ Every extension repo should own fast local tests for its own code:
 - domain logic and stores work
 - request handlers validate expected inputs
 
-Examples for service-backed packs:
+Examples for service-backed extensions:
 
 - parse embedded templates in a tiny `*_test.go`
 - test stage seeding, vote dedupe, or slug generation
@@ -239,7 +239,7 @@ For workspace-scoped admin pages, the current platform rule is:
 ### Layer 2: Sandbox smoke tests
 
 Every serious extension should also have one sandbox smoke flow that exercises
-the real installed pack.
+the real installed extension.
 
 Recommended checks:
 
@@ -319,7 +319,7 @@ example rather than a richer shared harness.
 ## How API Changes Should Work
 
 If we change the extension API or manifest contract, do it with explicit
-versioning and canary packs.
+versioning and canary extensions.
 
 ### 1. Version the contract
 
@@ -336,12 +336,12 @@ When the platform changes:
 1. update manifest/runtime validation in core
 2. update the SDK verifier
 3. update reference extension fixtures
-4. update first-party packs
+4. update first-party extensions
 5. only then tell external authors to move
 
 That keeps the developer path coherent.
 
-### 3. Keep first-party packs as canaries
+### 3. Keep first-party extensions as canaries
 
 The first-party extensions repo should be the compatibility canary.
 
@@ -353,7 +353,7 @@ Every platform change that affects extension contracts should run:
 - route resolution assertions
 - targeted workflow smoke tests
 
-against all first-party packs.
+against all first-party extensions.
 
 If the first-party set fails, the contract change is not ready.
 
@@ -378,12 +378,12 @@ The recommended workflow is now:
 4. Exercise the main runtime workflow in the sandbox.
 5. Add browser automation when the extension has meaningful UI. Start from
    [`examples/playwright/`](./examples/playwright/).
-6. Keep first-party and custom packs on the same contract loop.
+6. Keep first-party and custom extensions on the same contract loop.
 
 That gives us one story for everyone:
 
 - extension authors
-- first-party pack maintainers
+- first-party extension maintainers
 - customer private extension repos
 - future platform contract changes
 

@@ -20,8 +20,8 @@ Use it when the extension has meaningful UI and you want to prove:
 Set:
 
 - `MBR_BASE_URL` such as `https://app.example.com`
-- `MBR_EXTENSION_PATH` such as `/extensions/sample-ops-pack`
-- optionally `MBR_PUBLIC_PATH` such as `/sample-ops-pack`
+- `MBR_EXTENSION_PATH` such as `/extensions/sample-ops-extension`
+- optionally `MBR_PUBLIC_PATH` such as `/sample-ops-extension`
 
 ## Run
 
