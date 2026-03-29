@@ -30,6 +30,7 @@ Start here:
 
 - [START_HERE.md](START_HERE.md)
 - [TESTING.md](TESTING.md)
+- [SERVICE_BACKED.md](SERVICE_BACKED.md)
 
 ## Before You Start
 
@@ -71,6 +72,7 @@ What this template gives you:
 
 - one clear agent handoff file
 - one testing and verification guide
+- one service-backed upgrade guide
 - one machine-readable `extension.contract.json`
 - one proof-oriented validation loop for resolved navigation, widgets, and seeded resources
 - one explicit instance-admin/no-workspace validation expectation
@@ -80,6 +82,7 @@ What this template gives you:
 - one bundled agent skill
 - one threat-model prompt
 - one review checklist
+- one browser-smoke example
 - one sandbox install script
 - one sandbox upgrade script
 - one activation and monitor script
@@ -175,3 +178,8 @@ If you need service-backed behavior later, keep the same repo shape and add:
 - owned-schema migrations
 
 Do not start there unless you actually need it.
+
+When you do need it, use:
+
+- [SERVICE_BACKED.md](SERVICE_BACKED.md)
+- [examples/playwright/](examples/playwright/)

@@ -72,6 +72,7 @@ separately controlled path is being used.
 - `assets/public/index.html`
 - `assets/agent-skills/operate-pack.md`
 - `TESTING.md`
+- `SERVICE_BACKED.md`
 - `security/threat-model.md`
 - `security/review-checklist.md`
 - `scripts/install-into-sandbox.sh`
@@ -81,6 +82,7 @@ separately controlled path is being used.
 - `scripts/generate-signing-key.go`
 - `scripts/sign-bundle.go`
 - `scripts/publish-bundle-oci.sh`
+- `examples/playwright/`
 
 ## First Pass Workflow
 
@@ -116,6 +118,9 @@ mbr extensions skills list --id EXTENSION_ID
 
 Then read `TESTING.md` and make sure the extension can prove the main workflow,
 not just install and activate cleanly.
+
+If the requirement genuinely needs backend runtime behavior, stop and read
+`SERVICE_BACKED.md` before inventing your own runtime shape.
 
 Important rule for workspace-scoped admin pages:
 

@@ -30,7 +30,8 @@ checks:
 - manifest validation in core
 - runtime health and diagnostics for service-backed extensions
 
-That is useful, but it is not yet a complete developer-facing test strategy.
+That is useful, and it now gives external authors a concrete supported baseline,
+but it is not yet the whole developer-facing test story.
 
 The current system is strongest at:
 
@@ -39,7 +40,7 @@ The current system is strongest at:
 - health and runtime registration validation
 - first-party regression tests inside the core repo
 
-The current system is weakest at:
+The current system is still weakest at:
 
 - reusable public harnesses that mirror first-party extension tests
 - browser-level checks that prove the extension actually renders and appears in
@@ -327,6 +328,10 @@ What still needs a reusable public harness is the behavior layer:
 - exercise the primary workflow
 - run browser automation for menu visibility and form submission
 
+The SDK now includes a minimal browser-smoke example under
+[`examples/playwright/`](./examples/playwright/), but it is still a starter
+example rather than a richer shared harness.
+
 ## How API Changes Should Work
 
 If we change the extension API or manifest contract, do it with explicit
@@ -387,7 +392,8 @@ The recommended workflow is now:
    `mbr extensions lint . --write-contract --json` and review the diff.
 3. Run `mbr extensions verify . --workspace ws_preview --json`.
 4. Exercise the main runtime workflow in the sandbox.
-5. Add browser automation when the extension has meaningful UI.
+5. Add browser automation when the extension has meaningful UI. Start from
+   [`examples/playwright/`](./examples/playwright/).
 6. Keep first-party and custom packs on the same contract loop.
 
 That gives us one story for everyone:
