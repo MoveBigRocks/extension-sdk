@@ -22,8 +22,8 @@ fi
 : "${MBR_EXTENSION_ID:?Set MBR_EXTENSION_ID to the installed extension ID or set MBR_EXTENSION_SOURCE_DIR}"
 
 mbr auth whoami --url "${MBR_URL}" >/dev/null
-mbr extensions validate --id "${MBR_EXTENSION_ID}" --url "${MBR_URL}"
-mbr extensions activate --id "${MBR_EXTENSION_ID}" --url "${MBR_URL}"
+mbr extensions validate --id "${MBR_EXTENSION_ID}" --url "${MBR_URL}" --json
+mbr extensions activate --id "${MBR_EXTENSION_ID}" --url "${MBR_URL}" --json
 mbr extensions show --id "${MBR_EXTENSION_ID}" --url "${MBR_URL}" --json
 mbr extensions monitor --id "${MBR_EXTENSION_ID}" --url "${MBR_URL}" --json
 
@@ -31,3 +31,6 @@ if [[ -n "${MBR_WORKSPACE_ID:-}" ]]; then
   mbr extensions nav --workspace "${MBR_WORKSPACE_ID}" --url "${MBR_URL}" --json
   mbr extensions widgets --workspace "${MBR_WORKSPACE_ID}" --url "${MBR_URL}" --json
 fi
+
+mbr extensions nav --instance --url "${MBR_URL}" --json
+mbr extensions widgets --instance --url "${MBR_URL}" --json

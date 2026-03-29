@@ -31,6 +31,21 @@ Start here:
 - [START_HERE.md](START_HERE.md)
 - [TESTING.md](TESTING.md)
 
+## Before You Start
+
+This SDK assumes three things already exist:
+
+- a running Move Big Rocks instance you control locally, in staging, or in a
+  preview environment
+- the `mbr` CLI installed and authenticated against that instance
+- one preview or sandbox workspace where the extension can be installed safely
+
+If you do not have those yet, start with the core deployment path first:
+
+- [MoveBigRocks/platform/docs/CUSTOMER_INSTANCE_SETUP.md](https://github.com/MoveBigRocks/platform/blob/main/docs/CUSTOMER_INSTANCE_SETUP.md)
+- [MoveBigRocks/platform/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md](https://github.com/MoveBigRocks/platform/blob/main/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md)
+- [movebigrocks.com/docs/self-host](https://movebigrocks.com/docs/self-host)
+
 The default contract-first loop is now:
 
 ```bash
@@ -78,6 +93,32 @@ This template is intentionally the simplest safe authoring path:
 - workspace-scoped
 - standard-risk
 - bundle-first
+
+## Current Self-Built Runtime Envelope
+
+The generic public self-built path is deliberately narrower than the full
+first-party extension model.
+
+Today, this template is for extensions that stay inside the supported generic
+runtime slice:
+
+- `scope: workspace`
+- `risk: standard`
+- `kind: product` or `kind: operational`
+
+That means this SDK is a good fit for workflow packs, internal dashboards,
+public forms or pages, and other bounded business capability slices.
+
+It is not the right starting point for the currently restricted generic paths:
+
+- `scope: instance`
+- `risk: privileged`
+- `kind: identity`
+- `kind: connector`
+
+You can still move from `bundle` to `service_backed` later when the extension
+needs custom handlers, event consumers, scheduled jobs, or an owned schema, but
+that does not widen the allowed trust class by itself.
 
 ## Distribution Model
 

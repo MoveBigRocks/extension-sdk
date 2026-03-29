@@ -13,6 +13,21 @@ Build a safe extension that can be:
 5. monitored
 6. upgraded or deactivated cleanly later
 
+## Prerequisites
+
+Before using this SDK, make sure you already have:
+
+- a running Move Big Rocks instance you control locally, in staging, or in a
+  preview environment
+- the `mbr` CLI installed and authenticated against that instance
+- one preview or sandbox workspace where the extension can be installed safely
+
+If you do not have those yet, stop here and use the deployment path first:
+
+- [MoveBigRocks/platform/docs/CUSTOMER_INSTANCE_SETUP.md](https://github.com/MoveBigRocks/platform/blob/main/docs/CUSTOMER_INSTANCE_SETUP.md)
+- [MoveBigRocks/platform/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md](https://github.com/MoveBigRocks/platform/blob/main/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md)
+- [movebigrocks.com/docs/self-host](https://movebigrocks.com/docs/self-host)
+
 ## Default Rule
 
 Start with the simplest possible extension:
@@ -27,6 +42,27 @@ Only move to a service-backed extension if the requirement truly needs:
 - event consumers
 - scheduled jobs
 - owned Postgres schema and migrations
+
+## Supported Generic Runtime Slice
+
+This SDK is the supported public starting point for self-built extensions that
+stay inside the current generic runtime envelope:
+
+- `scope: workspace`
+- `risk: standard`
+- `kind: product` or `kind: operational`
+
+Do not use this path for currently restricted generic categories such as:
+
+- `scope: instance`
+- `risk: privileged`
+- `kind: identity`
+- `kind: connector`
+
+You can still move from `bundle` to `service_backed` later when the extension
+needs backend handlers, jobs, consumers, or an owned schema, but it should
+still remain inside the supported trust slice above unless a first-party or
+separately controlled path is being used.
 
 ## Files That Matter
 
