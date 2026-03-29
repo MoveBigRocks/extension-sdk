@@ -42,7 +42,6 @@ The current system is strongest at:
 
 The current system is still weakest at:
 
-- reusable public harnesses that mirror first-party extension tests
 - browser-level checks that prove the extension actually renders and appears in
   the admin shell
 - explicit guidance for static admin pages that must keep working for instance
@@ -299,28 +298,13 @@ third-party extension authoring.
 
 ## What We Still Need To Expose Publicly
 
-### 1. Public SDK test harness
-
-The helper pattern used by:
-
-- `platform/internal/testutil/refext/refext.go`
-
-should exist in a public form.
-
-Recommended shape:
-
-- `github.com/movebigrocks/extension-sdk/testing/sdktest`
-
-It should know how to:
-
-- load an extension source tree
-- install it into a sandbox
-- activate it
-- run standard assertions
-
-### 2. Public behavior harnesses
+### 1. Richer public behavior harnesses
 
 The CLI and contract file now cover the structural proof layer.
+
+The SDK also now includes a small public Go helper package under
+[`testing/sdktest/`](./testing/sdktest/) for contract-oriented smoke tests
+around the `mbr extensions ... --json` lifecycle.
 
 What still needs a reusable public harness is the behavior layer:
 

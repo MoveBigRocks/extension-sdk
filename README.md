@@ -31,6 +31,7 @@ Start here:
 - [START_HERE.md](START_HERE.md)
 - [TESTING.md](TESTING.md)
 - [SERVICE_BACKED.md](SERVICE_BACKED.md)
+- [testing/sdktest/](testing/sdktest/)
 
 ## Before You Start
 
@@ -73,6 +74,7 @@ What this template gives you:
 - one clear agent handoff file
 - one testing and verification guide
 - one service-backed upgrade guide
+- one public Go smoke-test helper
 - one machine-readable `extension.contract.json`
 - one proof-oriented validation loop for resolved navigation, widgets, and seeded resources
 - one explicit instance-admin/no-workspace validation expectation
