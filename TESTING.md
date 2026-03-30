@@ -85,9 +85,9 @@ The platform already validates:
 
 Relevant code:
 
-- `platform/internal/platform/domain/extension.go`
-- `platform/internal/platform/services/extension_service.go`
-- `platform/internal/platform/services/extension_runtime.go`
+- `platform/pkg/extensionhost/platform/domain/extension.go`
+- `platform/pkg/extensionhost/platform/services/extension_service.go`
+- `platform/pkg/extensionhost/platform/services/extension_runtime.go`
 
 ### 3. Runtime diagnostics and proof surfaces
 
@@ -123,11 +123,11 @@ The core repo already has good test coverage for the extension system itself:
 
 Relevant files:
 
-- `platform/internal/platform/domain/extension_test.go`
-- `platform/internal/platform/services/extension_service_test.go`
-- `platform/internal/platform/services/extension_admin_navigation_test.go`
-- `platform/internal/platform/services/extension_runtime_test.go`
-- `platform/internal/platform/services/first_party_extension_packages_test.go`
+- `platform/pkg/extensionhost/platform/domain/extension_test.go`
+- `platform/pkg/extensionhost/platform/services/extension_service_test.go`
+- `platform/pkg/extensionhost/platform/services/extension_admin_navigation_test.go`
+- `platform/pkg/extensionhost/platform/services/extension_runtime_test.go`
+- `platform/pkg/extensionhost/platform/services/first_party_extension_packages_test.go`
 
 ## Public Boundary
 
@@ -345,9 +345,9 @@ When the platform changes:
 
 That keeps the developer path coherent.
 
-### 3. Keep first-party extensions as canaries
+### 3. Keep first-party extensions as contract canaries
 
-The first-party extensions repo should be the compatibility canary.
+The first-party extensions repo should be the contract canary.
 
 Every platform change that affects extension contracts should run:
 
