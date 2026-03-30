@@ -8,39 +8,14 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/movebigrocks/extension-sdk/runtimeproto"
 )
 
 const envSocketPath = "MBR_EXTENSION_RUNTIME_SOCKET_PATH"
-
-const (
-	HeaderInternalRequest       = "X-MBR-Internal-Extension-Request"
-	HeaderUserID                = "X-MBR-User-ID"
-	HeaderExtensionID           = "X-MBR-Extension-ID"
-	HeaderExtensionSlug         = "X-MBR-Extension-Slug"
-	HeaderExtensionPackageKey   = "X-MBR-Extension-Package-Key"
-	HeaderExtensionConfigJSON   = "X-MBR-Extension-Config-JSON"
-	HeaderWorkspaceID           = "X-MBR-Workspace-ID"
-	HeaderUserName              = "X-MBR-User-Name"
-	HeaderUserEmail             = "X-MBR-User-Email"
-	HeaderSessionContextJSON    = "X-MBR-Session-Context-JSON"
-	HeaderRouteParamsJSON       = "X-MBR-Route-Params-JSON"
-	HeaderAdminExtensionNavJSON = "X-MBR-Admin-Extension-Nav-JSON"
-	HeaderAdminWidgetsJSON      = "X-MBR-Admin-Extension-Widgets-JSON"
-	HeaderShowAnalytics         = "X-MBR-Show-Analytics"
-	HeaderShowErrorTracking     = "X-MBR-Show-Error-Tracking"
-)
-
-const (
-	InternalConsumerPathPrefix = "/__mbr/runtime/consumers/"
-	InternalJobPathPrefix      = "/__mbr/runtime/jobs/"
-)
-
-var unsafeSocketChars = regexp.MustCompile(`[^a-z0-9._-]+`)
 
 type SessionContext struct {
 	Type          string  `json:"type,omitempty"`
@@ -67,7 +42,7 @@ func DefaultEngine() *gin.Engine {
 func ListenAndServeUnixSocket(handler http.Handler, packageKey string) error {
 	socketPath := strings.TrimSpace(os.Getenv(envSocketPath))
 	if socketPath == "" {
-		socketPath = SocketPath("", packageKey)
+		socketPath = runtimeproto.SocketPath("", packageKey)
 	}
 	if err := os.MkdirAll(filepath.Dir(socketPath), 0o755); err != nil {
 		return err
@@ -96,7 +71,7 @@ func RegisterInternalRoutes(
 	if engine == nil {
 		return
 	}
-	engine.POST(InternalConsumerPathPrefix+"*target", func(c *gin.Context) {
+	engine.POST(runtimeproto.InternalConsumerPathPrefix+"*target", func(c *gin.Context) {
 		target := strings.TrimPrefix(c.Param("target"), "/")
 		handler, ok := eventConsumers[target]
 		if !ok || handler == nil {
@@ -114,7 +89,7 @@ func RegisterInternalRoutes(
 		}
 		c.Status(http.StatusNoContent)
 	})
-	engine.POST(InternalJobPathPrefix+"*target", func(c *gin.Context) {
+	engine.POST(runtimeproto.InternalJobPathPrefix+"*target", func(c *gin.Context) {
 		target := strings.TrimPrefix(c.Param("target"), "/")
 		handler, ok := jobs[target]
 		if !ok || handler == nil {
@@ -220,28 +195,28 @@ func ExtensionConfigString(c *gin.Context, key string) (string, bool) {
 
 func ForwardedContextMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if extensionID := strings.TrimSpace(c.GetHeader(HeaderExtensionID)); extensionID != "" {
+		if extensionID := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderExtensionID)); extensionID != "" {
 			c.Set("extension_id", extensionID)
 		}
-		if extensionSlug := strings.TrimSpace(c.GetHeader(HeaderExtensionSlug)); extensionSlug != "" {
+		if extensionSlug := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderExtensionSlug)); extensionSlug != "" {
 			c.Set("extension_slug", extensionSlug)
 		}
-		if packageKey := strings.TrimSpace(c.GetHeader(HeaderExtensionPackageKey)); packageKey != "" {
+		if packageKey := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderExtensionPackageKey)); packageKey != "" {
 			c.Set("extension_package_key", packageKey)
 		}
-		if userID := strings.TrimSpace(c.GetHeader(HeaderUserID)); userID != "" {
+		if userID := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderUserID)); userID != "" {
 			c.Set("user_id", userID)
 		}
-		if workspaceID := strings.TrimSpace(c.GetHeader(HeaderWorkspaceID)); workspaceID != "" {
+		if workspaceID := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderWorkspaceID)); workspaceID != "" {
 			c.Set("workspace_id", workspaceID)
 		}
-		if userName := strings.TrimSpace(c.GetHeader(HeaderUserName)); userName != "" {
+		if userName := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderUserName)); userName != "" {
 			c.Set("name", userName)
 		}
-		if userEmail := strings.TrimSpace(c.GetHeader(HeaderUserEmail)); userEmail != "" {
+		if userEmail := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderUserEmail)); userEmail != "" {
 			c.Set("email", userEmail)
 		}
-		if raw := strings.TrimSpace(c.GetHeader(HeaderSessionContextJSON)); raw != "" {
+		if raw := strings.TrimSpace(c.GetHeader(runtimeproto.HeaderSessionContextJSON)); raw != "" {
 			var current SessionContext
 			if err := json.Unmarshal([]byte(raw), &current); err == nil {
 				c.Set("session", &Session{CurrentContext: current})
@@ -257,11 +232,11 @@ func ForwardedContextMiddleware() gin.HandlerFunc {
 				}
 			}
 		}
-		decodeExtensionConfigHeader(c, HeaderExtensionConfigJSON, "extension_config")
-		decodeJSONHeader(c, HeaderAdminExtensionNavJSON, "admin_extension_nav")
-		decodeJSONHeader(c, HeaderAdminWidgetsJSON, "admin_extension_widgets")
-		decodeBoolHeader(c, HeaderShowAnalytics, "admin_feature_analytics")
-		decodeBoolHeader(c, HeaderShowErrorTracking, "admin_feature_error_tracking")
+		decodeExtensionConfigHeader(c, runtimeproto.HeaderExtensionConfigJSON, "extension_config")
+		decodeJSONHeader(c, runtimeproto.HeaderAdminExtensionNavJSON, "admin_extension_nav")
+		decodeJSONHeader(c, runtimeproto.HeaderAdminWidgetsJSON, "admin_extension_widgets")
+		decodeBoolHeader(c, runtimeproto.HeaderShowAnalytics, "admin_feature_analytics")
+		decodeBoolHeader(c, runtimeproto.HeaderShowErrorTracking, "admin_feature_error_tracking")
 		c.Next()
 	}
 }
@@ -305,37 +280,4 @@ func canManageUsers(role string) bool {
 	default:
 		return false
 	}
-}
-
-func SocketPath(rootDir, packageKey string) string {
-	rootDir = strings.TrimSpace(rootDir)
-	if rootDir == "" {
-		rootDir = "./tmp/extensions"
-	}
-	return filepath.Join(rootDir, sanitizeSocketName(packageKey)+".sock")
-}
-
-func InternalConsumerPath(serviceTarget string) string {
-	return InternalConsumerPathPrefix + sanitizePathSegment(serviceTarget)
-}
-
-func InternalJobPath(serviceTarget string) string {
-	return InternalJobPathPrefix + sanitizePathSegment(serviceTarget)
-}
-
-func sanitizeSocketName(value string) string {
-	value = strings.ToLower(strings.TrimSpace(value))
-	value = strings.ReplaceAll(value, "/", "_")
-	value = unsafeSocketChars.ReplaceAllString(value, "_")
-	value = strings.Trim(value, "._-")
-	if value == "" {
-		return "extension"
-	}
-	return value
-}
-
-func sanitizePathSegment(value string) string {
-	value = strings.TrimSpace(value)
-	value = strings.TrimPrefix(value, "/")
-	return value
 }

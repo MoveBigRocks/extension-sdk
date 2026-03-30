@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/movebigrocks/extension-sdk/runtimeproto"
 )
 
 func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
@@ -47,17 +48,17 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
-	req.Header.Set(HeaderExtensionID, "ext_123")
-	req.Header.Set(HeaderExtensionSlug, "sales-pipeline")
-	req.Header.Set(HeaderExtensionPackageKey, "demandops/sales-pipeline")
-	req.Header.Set(HeaderExtensionConfigJSON, `{"mode":"agency","showTotals":true}`)
-	req.Header.Set(HeaderUserID, "usr_123")
-	req.Header.Set(HeaderWorkspaceID, "ws_header")
-	req.Header.Set(HeaderUserName, "Ada")
-	req.Header.Set(HeaderUserEmail, "ada@example.com")
-	req.Header.Set(HeaderSessionContextJSON, string(sessionJSON))
-	req.Header.Set(HeaderShowAnalytics, "true")
-	req.Header.Set(HeaderShowErrorTracking, "false")
+	req.Header.Set(runtimeproto.HeaderExtensionID, "ext_123")
+	req.Header.Set(runtimeproto.HeaderExtensionSlug, "sales-pipeline")
+	req.Header.Set(runtimeproto.HeaderExtensionPackageKey, "demandops/sales-pipeline")
+	req.Header.Set(runtimeproto.HeaderExtensionConfigJSON, `{"mode":"agency","showTotals":true}`)
+	req.Header.Set(runtimeproto.HeaderUserID, "usr_123")
+	req.Header.Set(runtimeproto.HeaderWorkspaceID, "ws_header")
+	req.Header.Set(runtimeproto.HeaderUserName, "Ada")
+	req.Header.Set(runtimeproto.HeaderUserEmail, "ada@example.com")
+	req.Header.Set(runtimeproto.HeaderSessionContextJSON, string(sessionJSON))
+	req.Header.Set(runtimeproto.HeaderShowAnalytics, "true")
+	req.Header.Set(runtimeproto.HeaderShowErrorTracking, "false")
 
 	rec := httptest.NewRecorder()
 	engine.ServeHTTP(rec, req)

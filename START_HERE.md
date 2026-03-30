@@ -129,9 +129,10 @@ not just install and activate cleanly.
 If the requirement genuinely needs backend runtime behavior, stop and read
 `SERVICE_BACKED.md` before inventing your own runtime shape.
 
-If you need service-backed HTTP bootstrap or forwarded admin/session context
-helpers, use the public SDK packages such as `runtimehttp` instead of copying
-helpers out of first-party repos.
+If you need service-backed HTTP bootstrap, runtime wire constants, or forwarded
+admin/session context helpers, use the public SDK packages such as
+`runtimeproto` and `runtimehttp` instead of copying helpers out of first-party
+repos.
 
 The host forwards extension identity and effective installed config into that
 runtime context. Prefer SDK helpers like `runtimehttp.ExtensionConfigString`

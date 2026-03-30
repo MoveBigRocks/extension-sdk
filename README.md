@@ -82,8 +82,8 @@ Important boundary:
 
 Right now that public boundary is split:
 
-- `MoveBigRocks/extension-sdk` for runtime helpers such as `runtimehttp` and
-  `extdb`
+- `MoveBigRocks/extension-sdk` for runtime protocol and helper packages such as
+  `runtimeproto`, `runtimehttp`, and `extdb`
 - `github.com/movebigrocks/platform/pkg/extensionhost/...` for host-owned
   public types and contracts that first-party and external runtimes may need
 
@@ -103,6 +103,7 @@ What this SDK gives you:
 - one threat-model prompt
 - one review checklist
 - one browser-smoke example
+- one public `runtimeproto` package for runtime wire headers and socket paths
 - one public `runtimehttp` helper package for service-backed runtime bootstrap
 - one sandbox install script
 - one sandbox upgrade script
