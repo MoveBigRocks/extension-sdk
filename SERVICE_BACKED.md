@@ -56,6 +56,11 @@ When you implement runtime code, prefer the public SDK helpers and standard Go
 libraries. Do not reach into `platform/internal/...` from an external
 extension repo.
 
+For request-scoped behavior, treat the host as the source of truth for runtime
+context. The platform forwards extension identity, effective extension config,
+session context, and admin UI context into the runtime. Read those values from
+the SDK instead of querying core stores for your own installation metadata.
+
 ## Manifest Changes
 
 The typical upgrade from bundle-first to service-backed is:

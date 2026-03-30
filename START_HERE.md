@@ -133,6 +133,11 @@ If you need service-backed HTTP bootstrap or forwarded admin/session context
 helpers, use the public SDK packages such as `runtimehttp` instead of copying
 helpers out of first-party repos.
 
+The host forwards extension identity and effective installed config into that
+runtime context. Prefer SDK helpers like `runtimehttp.ExtensionConfigString`
+instead of querying core platform stores just to discover your own extension's
+config.
+
 Important rule for workspace-scoped admin pages:
 
 - do not assume the user will always have a live workspace session context
