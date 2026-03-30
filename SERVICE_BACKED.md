@@ -61,6 +61,10 @@ context. The platform forwards extension identity, effective extension config,
 session context, and admin UI context into the runtime. Read those values from
 the SDK instead of querying core stores for your own installation metadata.
 
+For extension-owned PostgreSQL access, use SDK helpers such as `extdb` before
+considering any platform-side SQL wrapper. That keeps the runtime on public
+dependencies and makes the extension easier to move into its own repo cleanly.
+
 ## Manifest Changes
 
 The typical upgrade from bundle-first to service-backed is:

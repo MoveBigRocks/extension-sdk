@@ -138,6 +138,9 @@ runtime context. Prefer SDK helpers like `runtimehttp.ExtensionConfigString`
 instead of querying core platform stores just to discover your own extension's
 config.
 
+If the extension owns an `ext_*` schema, prefer SDK database helpers like
+`extdb` instead of importing the platform's internal SQL wrappers.
+
 Important rule for workspace-scoped admin pages:
 
 - do not assume the user will always have a live workspace session context
