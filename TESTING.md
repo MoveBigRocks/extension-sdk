@@ -398,3 +398,7 @@ The main remaining gap is the reusable behavior harness on top:
 - public HTTP smoke helpers
 - public browser automation helpers
 - public Go test fixtures instead of `platform/internal/...`
+
+Until more helpers move fully into the SDK repo, use
+`github.com/movebigrocks/platform/pkg/extensionhost/...` for platform-owned
+public test fixtures and contracts rather than importing `platform/internal/...`.

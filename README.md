@@ -80,6 +80,13 @@ Important boundary:
   dependencies
 - extension repos should not import `platform/internal/...`
 
+Right now that public boundary is split:
+
+- `MoveBigRocks/extension-sdk` for runtime helpers such as `runtimehttp` and
+  `extdb`
+- `github.com/movebigrocks/platform/pkg/extensionhost/...` for host-owned
+  public types and contracts that first-party and external runtimes may need
+
 What this SDK gives you:
 
 - one clear agent handoff file

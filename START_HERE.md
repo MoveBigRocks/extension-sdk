@@ -141,6 +141,11 @@ config.
 If the extension owns an `ext_*` schema, prefer SDK database helpers like
 `extdb` instead of importing the platform's internal SQL wrappers.
 
+If you need shared host-side types such as auth context, store interfaces, or
+other platform-owned contracts, use the public Go packages under
+`github.com/movebigrocks/platform/pkg/extensionhost/...`, not
+`platform/internal/...`.
+
 Important rule for workspace-scoped admin pages:
 
 - do not assume the user will always have a live workspace session context

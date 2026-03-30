@@ -110,6 +110,11 @@ If you need a starting point for service-backed HTTP wiring, use the public SDK
 runtime helpers such as `runtimehttp` rather than copying first-party helper
 code into the extension repo.
 
+If the runtime needs platform-owned contracts like auth context, shared domain
+events, or store interfaces, import the public host-facing packages under
+`github.com/movebigrocks/platform/pkg/extensionhost/...` rather than reaching
+into `platform/internal/...`.
+
 ## Validation Loop
 
 Use this loop after converting the extension:
