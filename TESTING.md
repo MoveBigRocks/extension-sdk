@@ -129,15 +129,19 @@ Relevant files:
 - `platform/internal/platform/services/extension_runtime_test.go`
 - `platform/internal/platform/services/first_party_extension_packages_test.go`
 
-## The Main Gap
+## Public Boundary
 
-The SDK boundary is improving, but it is not complete yet.
+The public extension boundary is now explicit.
 
-There is now a public path for some common runtime concerns, and extension
-repos should use those public helpers instead of importing
-`platform/internal/...`.
+Extension repos should use:
 
-In practice, external authors still rely on:
+- `MoveBigRocks/extension-sdk` for runtime helpers and test helpers
+- `github.com/movebigrocks/platform/pkg/extensionhost/...` for platform-owned
+  public host contracts
+
+They should not import `platform/internal/...`.
+
+External authors still rely on:
 
 - local Go tests they write themselves
 - the install/validate/activate/monitor loop
@@ -393,12 +397,12 @@ The SDK now gives you a real contract-first loop.
 
 The platform already gives you strong manifest and runtime validation.
 
-The main remaining gap is the reusable behavior harness on top:
+The next useful layer to add over time is more reusable behavior harnessing:
 
 - public HTTP smoke helpers
 - public browser automation helpers
-- public Go test fixtures instead of `platform/internal/...`
+- broader public Go test fixtures on top of the current host packages
 
-Until more helpers move fully into the SDK repo, use
-`github.com/movebigrocks/platform/pkg/extensionhost/...` for platform-owned
-public test fixtures and contracts rather than importing `platform/internal/...`.
+Today, use `github.com/movebigrocks/platform/pkg/extensionhost/...` for
+platform-owned public test fixtures and contracts rather than importing
+`platform/internal/...`.
