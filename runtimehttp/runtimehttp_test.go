@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-
-	publicruntime "github.com/movebigrocks/platform/pkg/extensionsruntime"
 )
 
 func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
@@ -17,6 +15,10 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 	engine.Use(ForwardedContextMiddleware())
 	engine.GET("/test", func(c *gin.Context) {
 		payload := gin.H{
+			"extension_id":   ExtensionID(c),
+			"extension_slug": ExtensionSlug(c),
+			"package_key":    ExtensionPackageKey(c),
+			"mode":           stringValue(c, "mode"),
 			"user_id":        c.GetString("user_id"),
 			"workspace_id":   c.GetString("workspace_id"),
 			"name":           c.GetString("name"),
@@ -45,13 +47,17 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
-	req.Header.Set(publicruntime.HeaderUserID, "usr_123")
-	req.Header.Set(publicruntime.HeaderWorkspaceID, "ws_header")
-	req.Header.Set(publicruntime.HeaderUserName, "Ada")
-	req.Header.Set(publicruntime.HeaderUserEmail, "ada@example.com")
-	req.Header.Set(publicruntime.HeaderSessionContextJSON, string(sessionJSON))
-	req.Header.Set(publicruntime.HeaderShowAnalytics, "true")
-	req.Header.Set(publicruntime.HeaderShowErrorTracking, "false")
+	req.Header.Set(HeaderExtensionID, "ext_123")
+	req.Header.Set(HeaderExtensionSlug, "sales-pipeline")
+	req.Header.Set(HeaderExtensionPackageKey, "demandops/sales-pipeline")
+	req.Header.Set(HeaderExtensionConfigJSON, `{"mode":"agency","showTotals":true}`)
+	req.Header.Set(HeaderUserID, "usr_123")
+	req.Header.Set(HeaderWorkspaceID, "ws_header")
+	req.Header.Set(HeaderUserName, "Ada")
+	req.Header.Set(HeaderUserEmail, "ada@example.com")
+	req.Header.Set(HeaderSessionContextJSON, string(sessionJSON))
+	req.Header.Set(HeaderShowAnalytics, "true")
+	req.Header.Set(HeaderShowErrorTracking, "false")
 
 	rec := httptest.NewRecorder()
 	engine.ServeHTTP(rec, req)
@@ -66,6 +72,18 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 
 	if got := payload["user_id"]; got != "usr_123" {
 		t.Fatalf("expected user_id usr_123, got %#v", got)
+	}
+	if got := payload["extension_id"]; got != "ext_123" {
+		t.Fatalf("expected extension_id ext_123, got %#v", got)
+	}
+	if got := payload["extension_slug"]; got != "sales-pipeline" {
+		t.Fatalf("expected extension_slug sales-pipeline, got %#v", got)
+	}
+	if got := payload["package_key"]; got != "demandops/sales-pipeline" {
+		t.Fatalf("expected package_key demandops/sales-pipeline, got %#v", got)
+	}
+	if got := payload["mode"]; got != "agency" {
+		t.Fatalf("expected mode agency, got %#v", got)
 	}
 	if got := payload["workspace_id"]; got != "ws_123" {
 		t.Fatalf("expected workspace_id from session context, got %#v", got)
@@ -118,4 +136,12 @@ func boolValue(c *gin.Context, key string) bool {
 	}
 	parsed, ok := value.(bool)
 	return ok && parsed
+}
+
+func stringValue(c *gin.Context, key string) string {
+	value, ok := ExtensionConfigString(c, key)
+	if !ok {
+		return ""
+	}
+	return value
 }
