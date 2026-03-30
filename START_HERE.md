@@ -28,6 +28,13 @@ If you do not have those yet, stop here and use the deployment path first:
 - [MoveBigRocks/platform/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md](https://github.com/MoveBigRocks/platform/blob/main/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md)
 - [movebigrocks.com/docs/self-host](https://movebigrocks.com/docs/self-host)
 
+Important boundary:
+
+- Move Big Rocks is the extension host
+- `mbr extensions ...` remains the authoritative lifecycle surface
+- this SDK is for extension runtime code, proof tooling, and authoring workflow
+- do not import `platform/internal/...` from an external extension repo
+
 ## Default Rule
 
 Start with the simplest possible extension:
@@ -121,6 +128,10 @@ not just install and activate cleanly.
 
 If the requirement genuinely needs backend runtime behavior, stop and read
 `SERVICE_BACKED.md` before inventing your own runtime shape.
+
+If you need service-backed HTTP bootstrap or forwarded admin/session context
+helpers, use the public SDK packages such as `runtimehttp` instead of copying
+helpers out of first-party repos.
 
 Important rule for workspace-scoped admin pages:
 

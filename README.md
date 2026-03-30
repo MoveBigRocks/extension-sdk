@@ -1,7 +1,8 @@
-# Move Big Rocks Extension SDK Template
+# Move Big Rocks Extension SDK
 
-This tree is the canonical Move Big Rocks extension-SDK layout for building extensions
-on top of Move Big Rocks, the AI-native service operations platform.
+This tree is the canonical Move Big Rocks extension SDK and starter layout for
+building extensions on top of Move Big Rocks, the AI-native service operations
+platform.
 
 It is licensed under the MBR Source Code Available License 1.0. Teams may use
 and modify it for their own company, use the first-party extensions, and build
@@ -18,6 +19,7 @@ This source tree is:
 - the starting point for private custom-extension repos
 - the starting point for free public extensions built on the same contract
 - the authoring contract for builder workflows
+- a home for public runtime helpers and extension-proof tooling
 - the place agents and humans should read before creating a custom extension repo
 
 This source tree is not:
@@ -69,7 +71,16 @@ contract file and review the diff:
 mbr extensions lint . --write-contract --json
 ```
 
-What this template gives you:
+Important boundary:
+
+- Move Big Rocks itself remains the extension host
+- `mbr extensions ...` remains the authoritative install, validate, activate,
+  monitor, and rollback surface
+- extension repos should build against public SDK packages and ordinary
+  dependencies
+- extension repos should not import `platform/internal/...`
+
+What this SDK gives you:
 
 - one clear agent handoff file
 - one testing and verification guide
@@ -85,6 +96,7 @@ What this template gives you:
 - one threat-model prompt
 - one review checklist
 - one browser-smoke example
+- one public `runtimehttp` helper package for service-backed runtime bootstrap
 - one sandbox install script
 - one sandbox upgrade script
 - one activation and monitor script

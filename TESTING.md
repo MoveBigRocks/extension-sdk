@@ -131,13 +131,13 @@ Relevant files:
 
 ## The Main Gap
 
-The strongest helpers today live inside `platform/internal/...`.
+The SDK boundary is improving, but it is not complete yet.
 
-That means first-party extensions can benefit from rich regression tests, but a
-third-party or customer extension repo built from this SDK cannot directly
-reuse the same helpers.
+There is now a public path for some common runtime concerns, and extension
+repos should use those public helpers instead of importing
+`platform/internal/...`.
 
-In practice, external authors currently rely on:
+In practice, external authors still rely on:
 
 - local Go tests they write themselves
 - the install/validate/activate/monitor loop

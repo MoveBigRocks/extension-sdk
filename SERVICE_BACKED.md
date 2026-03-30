@@ -52,6 +52,10 @@ need:
 
 Use that as a pattern, not a rigid framework requirement.
 
+When you implement runtime code, prefer the public SDK helpers and standard Go
+libraries. Do not reach into `platform/internal/...` from an external
+extension repo.
+
 ## Manifest Changes
 
 The typical upgrade from bundle-first to service-backed is:
@@ -92,6 +96,10 @@ Your first service-backed pass should keep the runtime narrow:
 - one bounded schema with one initial migration only if it is necessary
 
 That keeps the review surface understandable.
+
+If you need a starting point for service-backed HTTP wiring, use the public SDK
+runtime helpers such as `runtimehttp` rather than copying first-party helper
+code into the extension repo.
 
 ## Validation Loop
 
