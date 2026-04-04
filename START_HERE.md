@@ -33,7 +33,7 @@ Important boundary:
 - Move Big Rocks is the extension host
 - `mbr extensions ...` remains the authoritative lifecycle surface
 - this SDK is for extension runtime code, proof tooling, and authoring workflow
-- do not import `platform/internal/...` from an external extension repo
+- do not import anything from `github.com/movebigrocks/platform/...` from an external extension repo
 
 ## Default Rule
 
@@ -85,9 +85,9 @@ separately controlled path is being used.
 - `scripts/install-into-sandbox.sh`
 - `scripts/upgrade-in-sandbox.sh`
 - `scripts/verify-extension.sh`
-- `scripts/build-bundle.go`
-- `scripts/generate-signing-key.go`
-- `scripts/sign-bundle.go`
+- `scripts/build-bundle`
+- `scripts/generate-signing-key`
+- `scripts/sign-bundle`
 - `scripts/publish-bundle-oci.sh`
 - `examples/playwright/`
 
@@ -144,8 +144,8 @@ If the extension owns an `ext_*` schema, prefer SDK database helpers like
 
 If you need shared host-side types such as auth context, store interfaces, or
 other platform-owned contracts, use the public Go packages under
-`github.com/movebigrocks/platform/pkg/extensionhost/...`, not
-`platform/internal/...`.
+`github.com/movebigrocks/extension-sdk/extensionhost/...`, not anything under
+`github.com/movebigrocks/platform/...`.
 
 Important rule for workspace-scoped admin pages:
 
@@ -213,13 +213,13 @@ The bundled publication tooling supports both public signed bundles and
 instance-bound signed bundles:
 
 ```bash
-go run ./scripts/generate-signing-key.go \
+go run ./scripts/generate-signing-key \
   --publisher DemandOps \
   --key-id demandops-public-1 \
   --seed-out secrets/demandops-public-1.seed.b64 \
   --trusted-publishers-out dist/demandops-public-1.publisher.json
-go run ./scripts/build-bundle.go --source . --out dist/my-extension.bundle.json
-go run ./scripts/sign-bundle.go \
+go run ./scripts/build-bundle --source . --out dist/my-extension.bundle.json
+go run ./scripts/sign-bundle \
   --bundle dist/my-extension.bundle.json \
   --out dist/my-extension.signed.bundle.json \
   --key-id demandops-public-1 \
@@ -232,7 +232,7 @@ go run ./scripts/sign-bundle.go \
 
 If you are publishing a free public bundle, you do not need an instance-bound
 license claim. If you are publishing a controlled private bundle, pass
-`--instance-id` and `--license-token` to `sign-bundle.go`.
+`--instance-id` and `--license-token` to `scripts/sign-bundle`.
 
 Put the generated seed into your CI or publishing environment as
 `MBR_EXTENSION_SIGNING_PRIVATE_KEY_B64`. Put the generated trusted publisher

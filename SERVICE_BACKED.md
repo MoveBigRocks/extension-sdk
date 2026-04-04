@@ -53,8 +53,8 @@ need:
 Use that as a pattern, not a rigid framework requirement.
 
 When you implement runtime code, prefer the public SDK helpers and standard Go
-libraries. Do not reach into `platform/internal/...` from an external
-extension repo.
+libraries. Do not import anything from `github.com/movebigrocks/platform/...`
+from an external extension repo.
 
 For request-scoped behavior, treat the host as the source of truth for runtime
 context. The platform forwards extension identity, effective extension config,
@@ -112,8 +112,8 @@ code into the extension repo.
 
 If the runtime needs platform-owned contracts like auth context, shared domain
 events, or store interfaces, import the public host-facing packages under
-`github.com/movebigrocks/platform/pkg/extensionhost/...` rather than reaching
-into `platform/internal/...`.
+`github.com/movebigrocks/extension-sdk/extensionhost/...` rather than reaching
+into `github.com/movebigrocks/platform/...`.
 
 ## Validation Loop
 

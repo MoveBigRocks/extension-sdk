@@ -5,7 +5,7 @@ tests around the supported `mbr extensions ... --json` lifecycle.
 
 It is intentionally narrow. The goal is to make the contract-first extension
 loop easier to reuse from a custom extension repo without importing anything
-from `platform/internal/...`.
+from `github.com/movebigrocks/platform/...`.
 
 ## What It Helps With
 

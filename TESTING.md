@@ -135,11 +135,10 @@ The public extension boundary is now explicit.
 
 Extension repos should use:
 
-- `MoveBigRocks/extension-sdk` for runtime helpers and test helpers
-- `github.com/movebigrocks/platform/pkg/extensionhost/...` for platform-owned
-  public host contracts
+- `github.com/movebigrocks/extension-sdk/...` for runtime helpers, test
+  helpers, and host-facing public contracts
 
-They should not import `platform/internal/...`.
+They should not import `github.com/movebigrocks/platform/...`.
 
 External authors still rely on:
 
@@ -403,6 +402,6 @@ The next useful layer to add over time is more reusable behavior harnessing:
 - public browser automation helpers
 - broader public Go test fixtures on top of the current host packages
 
-Today, use `github.com/movebigrocks/platform/pkg/extensionhost/...` for
-platform-owned public test fixtures and contracts rather than importing
-`platform/internal/...`.
+Today, use `github.com/movebigrocks/extension-sdk/extensionhost/...` for
+public test fixtures and contracts rather than importing anything from
+`github.com/movebigrocks/platform/...`.

@@ -78,14 +78,13 @@ Important boundary:
   monitor, and rollback surface
 - extension repos should build against public SDK packages and ordinary
   dependencies
-- extension repos should not import `platform/internal/...`
+- extension repos should not import `github.com/movebigrocks/platform/...`
 
-Right now that public boundary is split:
+The public boundary lives in this module:
 
-- `MoveBigRocks/extension-sdk` for runtime protocol and helper packages such as
-  `runtimeproto`, `runtimehttp`, and `extdb`
-- `github.com/movebigrocks/platform/pkg/extensionhost/...` for host-owned
-  public types and contracts that first-party and external runtimes may need
+- `github.com/movebigrocks/extension-sdk/...` for runtime protocol, host-facing
+  types, runtime helpers, and database helpers such as `runtimeproto`,
+  `runtimehttp`, `runtimehost`, and `extdb`
 
 What this SDK gives you:
 
@@ -163,13 +162,13 @@ The SDK now includes the same basic tooling the first-party public bundle flow
 uses:
 
 ```bash
-go run ./scripts/generate-signing-key.go \
+go run ./scripts/generate-signing-key \
   --publisher DemandOps \
   --key-id demandops-public-1 \
   --seed-out secrets/demandops-public-1.seed.b64 \
   --trusted-publishers-out dist/demandops-public-1.publisher.json
-go run ./scripts/build-bundle.go --source . --out dist/my-extension.bundle.json
-go run ./scripts/sign-bundle.go \
+go run ./scripts/build-bundle --source . --out dist/my-extension.bundle.json
+go run ./scripts/sign-bundle \
   --bundle dist/my-extension.bundle.json \
   --out dist/my-extension.signed.bundle.json \
   --key-id demandops-public-1 \
