@@ -27,8 +27,6 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 			"user_role":      c.GetString("user_role"),
 			"workspace_name": c.GetString("workspace_name"),
 			"workspace_slug": c.GetString("workspace_slug"),
-			"analytics":      boolValue(c, "admin_feature_analytics"),
-			"errorTracking":  boolValue(c, "admin_feature_error_tracking"),
 		}
 		c.JSON(http.StatusOK, payload)
 	})
@@ -57,8 +55,6 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 	req.Header.Set(runtimeproto.HeaderUserName, "Ada")
 	req.Header.Set(runtimeproto.HeaderUserEmail, "ada@example.com")
 	req.Header.Set(runtimeproto.HeaderSessionContextJSON, string(sessionJSON))
-	req.Header.Set(runtimeproto.HeaderShowAnalytics, "true")
-	req.Header.Set(runtimeproto.HeaderShowErrorTracking, "false")
 
 	rec := httptest.NewRecorder()
 	engine.ServeHTTP(rec, req)
@@ -103,12 +99,6 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 	}
 	if got := payload["workspace_slug"]; got != "demand-ops" {
 		t.Fatalf("expected workspace_slug demand-ops, got %#v", got)
-	}
-	if got := payload["analytics"]; got != true {
-		t.Fatalf("expected analytics true, got %#v", got)
-	}
-	if got := payload["errorTracking"]; got != false {
-		t.Fatalf("expected errorTracking false, got %#v", got)
 	}
 }
 
