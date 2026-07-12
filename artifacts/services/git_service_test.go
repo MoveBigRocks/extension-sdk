@@ -177,6 +177,33 @@ func TestGitServiceRejectsOptionInjectionRevisions(t *testing.T) {
 	}
 }
 
+func TestGitServiceIgnoresAmbientGitEnv(t *testing.T) {
+	// Simulate running inside a git hook: git exports GIT_DIR and
+	// GIT_INDEX_FILE for the hook process. The service must not let those
+	// redirect its own per-workspace git operations onto the enclosing repo.
+	t.Setenv("GIT_DIR", filepath.Join(t.TempDir(), "bogus.git"))
+	t.Setenv("GIT_WORK_TREE", t.TempDir())
+	t.Setenv("GIT_INDEX_FILE", filepath.Join(t.TempDir(), "bogus-index"))
+
+	service := NewGitService(t.TempDir())
+	ctx := context.Background()
+	repository := WorkspaceRepository("ws_123")
+
+	res, err := service.Write(ctx, WriteParams{
+		Repository:    repository,
+		RelativePath:  "knowledge/teams/team_123/private/playbook.md",
+		Content:       []byte("# Playbook\n\nDraft\n"),
+		CommitMessage: "knowledge create playbook",
+		ActorID:       "user_123",
+	})
+	if err != nil {
+		t.Fatalf("write under ambient GIT_ env: %v", err)
+	}
+	if !res.Changed || strings.TrimSpace(res.Ref) == "" {
+		t.Fatalf("expected write to create a revision in the service repo despite ambient GIT_ env, got %#v", res)
+	}
+}
+
 func TestGitServiceRelativeRootDoesNotCreateNestedRepo(t *testing.T) {
 	wd, err := os.Getwd()
 	if err != nil {
