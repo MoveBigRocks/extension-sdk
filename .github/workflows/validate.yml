@@ -23,6 +23,9 @@ jobs:
           ref: main
           path: platform
 
+      - name: Check core security parity
+        run: bash ./scripts/check-core-security-parity.sh
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
