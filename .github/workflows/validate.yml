@@ -44,18 +44,18 @@ jobs:
 
       - name: Build sample bundle
         run: |
-          go run ./scripts/build-bundle.go --source . --out "${RUNNER_TEMP}/sample-extension.bundle.json"
+          go run ./scripts/build-bundle --source . --out "${RUNNER_TEMP}/sample-extension.bundle.json"
           test -s "${RUNNER_TEMP}/sample-extension.bundle.json"
 
       - name: Smoke test signing tools
         run: |
-          go run ./scripts/generate-signing-key.go \
+          go run ./scripts/generate-signing-key \
             --publisher "Move Big Rocks CI" \
             --key-id ci-test \
             --seed-out "${RUNNER_TEMP}/extension-sdk.seed.b64" \
             --trusted-publishers-out "${RUNNER_TEMP}/extension-sdk.publisher.json"
           export MBR_EXTENSION_SIGNING_PRIVATE_KEY_B64="$(cat "${RUNNER_TEMP}/extension-sdk.seed.b64")"
-          go run ./scripts/sign-bundle.go \
+          go run ./scripts/sign-bundle \
             --bundle "${RUNNER_TEMP}/sample-extension.bundle.json" \
             --out "${RUNNER_TEMP}/sample-extension.signed.bundle.json" \
             --key-id ci-test \
@@ -64,3 +64,10 @@ jobs:
           test -s "${RUNNER_TEMP}/sample-extension.signed.bundle.json"
           test -s "${RUNNER_TEMP}/extension-sdk.publisher.json"
           test -s "${RUNNER_TEMP}/extension-sdk.publisher-key.json"
+
+      - name: Verify the freshly signed bundle
+        run: |
+          go run ./scripts/verify-signed-bundle \
+            --bundle "${RUNNER_TEMP}/sample-extension.signed.bundle.json" \
+            --instance-id ci-instance \
+            --trusted-publishers "${RUNNER_TEMP}/extension-sdk.publisher-key.json"
