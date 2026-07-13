@@ -50,6 +50,15 @@ extract_region() {
 #   label | relative path under the extensionhost tree | start regex | end regex
 GUARDS=(
 	"extension-migration-containment|infrastructure/stores/sql/extension_schema_migrator.go|^// protectedSchemaTarget matches|^func isIdentRune"
+	# The bundle signer (scripts/sign-bundle) signs the exact bytes VerifyBundle
+	# checks, by reusing this package's CanonicalSignedBundlePayload and
+	# BundleLicenseClaim. If the license-claim shape or the canonicalization drift
+	# from the platform verifier, a bundle the SDK signs is one the core rejects.
+	# This is the drift that broke every signature once: the signer's own copy of
+	# the license claim marked every field omitempty, so a public bundle's license
+	# serialized shorter than the verifier reconstructed it.
+	"bundle-license-claim-shape|platform/services/extension_bundle_verifier.go|^type bundleLicenseClaim struct|^}"
+	"bundle-signed-payload-canonicalization|platform/services/extension_bundle_verifier.go|^func canonicalSignedBundlePayload|^func checksumSHA256Hex"
 )
 
 for entry in "${GUARDS[@]}"; do

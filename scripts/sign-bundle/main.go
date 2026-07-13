@@ -2,15 +2,15 @@ package main
 
 import (
 	"crypto/ed25519"
-	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	platformservices "github.com/movebigrocks/extension-sdk/extensionhost/platform/services"
 )
 
 type bundleEnvelope struct {
@@ -21,18 +21,10 @@ type bundleEnvelope struct {
 }
 
 type bundleTrustEnvelope struct {
-	KeyID     string             `json:"keyID"`
-	Algorithm string             `json:"algorithm,omitempty"`
-	Signature string             `json:"signature"`
-	License   bundleLicenseClaim `json:"license"`
-}
-
-type bundleLicenseClaim struct {
-	InstanceID  string `json:"instanceID,omitempty"`
-	Publisher   string `json:"publisher,omitempty"`
-	Slug        string `json:"slug,omitempty"`
-	Version     string `json:"version,omitempty"`
-	TokenSHA256 string `json:"tokenSHA256,omitempty"`
+	KeyID     string                              `json:"keyID"`
+	Algorithm string                              `json:"algorithm,omitempty"`
+	Signature string                              `json:"signature"`
+	License   platformservices.BundleLicenseClaim `json:"license"`
 }
 
 type manifestSummary struct {
@@ -97,17 +89,17 @@ func main() {
 		exitf("manifest must include publisher, slug, and version")
 	}
 
-	license := bundleLicenseClaim{
+	license := platformservices.BundleLicenseClaim{
 		Publisher: manifest.Publisher,
 		Slug:      manifest.Slug,
 		Version:   manifest.Version,
 	}
 	if strings.TrimSpace(*instanceID) != "" {
 		license.InstanceID = strings.TrimSpace(*instanceID)
-		license.TokenSHA256 = checksumSHA256Hex([]byte(strings.TrimSpace(*licenseToken)))
+		license.TokenSHA256 = platformservices.ChecksumSHA256Hex([]byte(strings.TrimSpace(*licenseToken)))
 	}
 
-	payload, err := canonicalSignedBundlePayload(envelope.Manifest, envelope.Assets, envelope.Migrations, license)
+	payload, err := platformservices.CanonicalSignedBundlePayload(envelope.Manifest, envelope.Assets, envelope.Migrations, license)
 	if err != nil {
 		exitf("build signed payload: %v", err)
 	}
@@ -164,46 +156,6 @@ func decodePrivateKey(encoded string) (ed25519.PrivateKey, ed25519.PublicKey, er
 	default:
 		return nil, nil, fmt.Errorf("expected %d-byte seed or %d-byte private key, got %d bytes", ed25519.SeedSize, ed25519.PrivateKeySize, len(keyBytes))
 	}
-}
-
-func canonicalSignedBundlePayload(manifestRaw, assetsRaw, migrationsRaw json.RawMessage, license bundleLicenseClaim) ([]byte, error) {
-	manifestValue, err := decodeBundleSection(manifestRaw, map[string]any{})
-	if err != nil {
-		return nil, fmt.Errorf("decode manifest: %w", err)
-	}
-	assetsValue, err := decodeBundleSection(assetsRaw, []any{})
-	if err != nil {
-		return nil, fmt.Errorf("decode assets: %w", err)
-	}
-	migrationsValue, err := decodeBundleSection(migrationsRaw, []any{})
-	if err != nil {
-		return nil, fmt.Errorf("decode migrations: %w", err)
-	}
-	return json.Marshal(map[string]any{
-		"assets":     assetsValue,
-		"license":    license,
-		"manifest":   manifestValue,
-		"migrations": migrationsValue,
-	})
-}
-
-func decodeBundleSection(raw json.RawMessage, defaultValue any) (any, error) {
-	if len(raw) == 0 {
-		return defaultValue, nil
-	}
-	var value any
-	if err := json.Unmarshal(raw, &value); err != nil {
-		return nil, err
-	}
-	if value == nil {
-		return defaultValue, nil
-	}
-	return value, nil
-}
-
-func checksumSHA256Hex(value []byte) string {
-	sum := sha256.Sum256(value)
-	return hex.EncodeToString(sum[:])
 }
 
 func exitf(format string, args ...any) {
