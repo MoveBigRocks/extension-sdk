@@ -60,3 +60,33 @@ func TestClientGetCaseNotFound(t *testing.T) {
 		t.Fatalf("expected not-found, got ok=%v case=%+v", ok, got)
 	}
 }
+
+func TestClientCreateQueueAndUpdateCasePaths(t *testing.T) {
+	var method, path string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		method, path = r.Method, r.URL.Path
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == http.MethodPost {
+			_ = json.NewEncoder(w).Encode(HostQueue{ID: "q1", Slug: "triage"})
+		} else {
+			_ = json.NewEncoder(w).Encode(HostCase{ID: "case-1"})
+		}
+	}))
+	defer server.Close()
+	c := &Client{BaseURL: server.URL, Token: "tok"}
+
+	if _, err := c.CreateQueue(context.Background(), CreateQueueInput{Name: "Triage", Slug: "triage"}); err != nil {
+		t.Fatalf("CreateQueue: %v", err)
+	}
+	if method != http.MethodPost || path != CoreQueuesPath {
+		t.Fatalf("CreateQueue hit %s %s", method, path)
+	}
+
+	status := "resolved"
+	if _, err := c.UpdateCase(context.Background(), "case-1", CaseUpdateInput{Status: &status}); err != nil {
+		t.Fatalf("UpdateCase: %v", err)
+	}
+	if method != http.MethodPatch || path != CoreCasesPath+"/case-1" {
+		t.Fatalf("UpdateCase hit %s %s", method, path)
+	}
+}
