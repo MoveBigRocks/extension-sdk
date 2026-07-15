@@ -3,6 +3,8 @@ package runtimehost
 import (
 	"context"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 // Coarse host operations. A coarse operation performs several core writes that
@@ -50,6 +52,29 @@ type IngestApplicationResult struct {
 func (c *Client) IngestApplication(ctx context.Context, input IngestApplicationInput) (*IngestApplicationResult, error) {
 	var out IngestApplicationResult
 	if err := c.doJSON(ctx, http.MethodPost, CoreIngestApplicationPath, input, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ApplyCaseChangeInput updates a case and evaluates the workspace's automation
+// rules for it in one core transaction. IdempotencyKey (for example the
+// stage-change event id) makes the call safe to retry without re-firing rules.
+type ApplyCaseChangeInput struct {
+	IdempotencyKey string          `json:"idempotencyKey"`
+	Patch          CaseUpdateInput `json:"patch"`
+	Event          string          `json:"event,omitempty"`
+	Changes        map[string]any  `json:"changes,omitempty"`
+}
+
+// ApplyCaseChange applies a case patch and fires automation rules for the case
+// in one core transaction, and returns the case. A repeat call with the same
+// idempotency key returns the case without re-applying the patch or re-firing
+// the rules.
+func (c *Client) ApplyCaseChange(ctx context.Context, caseID string, input ApplyCaseChangeInput) (*HostCase, error) {
+	var out HostCase
+	path := CoreCasesPath + "/" + url.PathEscape(strings.TrimSpace(caseID)) + "/apply-change"
+	if err := c.doJSON(ctx, http.MethodPost, path, input, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil

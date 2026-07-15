@@ -150,3 +150,19 @@ func TestClientIngestApplicationPath(t *testing.T) {
 		t.Fatalf("IngestApplication hit %s %s", method, path)
 	}
 }
+
+func TestClientApplyCaseChangePath(t *testing.T) {
+	var method, path string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		method, path = r.Method, r.URL.Path
+		_ = json.NewEncoder(w).Encode(HostCase{ID: "case-1"})
+	}))
+	defer server.Close()
+	c := &Client{BaseURL: server.URL, Token: "tok"}
+	if _, err := c.ApplyCaseChange(context.Background(), "case-1", ApplyCaseChangeInput{IdempotencyKey: "k", Event: "stage"}); err != nil {
+		t.Fatalf("ApplyCaseChange: %v", err)
+	}
+	if method != http.MethodPost || path != CoreCasesPath+"/case-1/apply-change" {
+		t.Fatalf("ApplyCaseChange hit %s %s", method, path)
+	}
+}
