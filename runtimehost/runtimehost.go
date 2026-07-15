@@ -57,7 +57,15 @@ func NewClientFromRequest(req *http.Request) (*Client, error) {
 	if token == "" {
 		return nil, fmt.Errorf("host token is missing")
 	}
-	baseURL := forwardedBaseURL(req)
+	// Prefer the host-API base URL the host supplies explicitly. It always
+	// points at a surface that serves /__mbr/host/v1, independent of which
+	// public, admin, or workspace domain the inbound request arrived on. Fall
+	// back to the forwarded host only when the host has not supplied it, so an
+	// older host that injects just the forwarded headers keeps working.
+	baseURL := strings.TrimSpace(req.Header.Get(runtimeproto.HeaderAPIBaseURL))
+	if baseURL == "" {
+		baseURL = forwardedBaseURL(req)
+	}
 	if baseURL == "" {
 		return nil, fmt.Errorf("forwarded host context is missing")
 	}

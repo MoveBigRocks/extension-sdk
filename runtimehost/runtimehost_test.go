@@ -29,6 +29,26 @@ func TestNewClientFromRequestUsesForwardedOrigin(t *testing.T) {
 	}
 }
 
+func TestNewClientFromRequestPrefersHostAPIBaseURL(t *testing.T) {
+	// A public careers submission arrives on the app domain, but the host API
+	// lives on the api domain. The explicit host-API base URL header must win
+	// over the forwarded host so the client targets a surface that serves
+	// /__mbr/host/v1.
+	req := httptest.NewRequest(http.MethodPost, "http://unix/careers/applications", nil)
+	req.Header.Set(runtimeproto.HeaderHostToken, "tok_123")
+	req.Header.Set("X-Forwarded-Proto", "https")
+	req.Header.Set("X-Forwarded-Host", "app.movebigrocks.test")
+	req.Header.Set(runtimeproto.HeaderAPIBaseURL, "https://api.movebigrocks.test")
+
+	client, err := NewClientFromRequest(req)
+	if err != nil {
+		t.Fatalf("NewClientFromRequest returned error: %v", err)
+	}
+	if got := client.BaseURL; got != "https://api.movebigrocks.test" {
+		t.Fatalf("expected host-API base URL to win, got %q", got)
+	}
+}
+
 func TestIssueIdentitySession(t *testing.T) {
 	var authHeader string
 	var payload IdentitySessionRequest
