@@ -126,3 +126,27 @@ func TestClientAttachmentAndArtifactPaths(t *testing.T) {
 		t.Fatalf("PublishArtifact hit %s %s", method, path)
 	}
 }
+
+func TestClientIngestApplicationPath(t *testing.T) {
+	var method, path string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		method, path = r.Method, r.URL.Path
+		_ = json.NewEncoder(w).Encode(IngestApplicationResult{ContactID: "c1", CaseID: "k1"})
+	}))
+	defer server.Close()
+	c := &Client{BaseURL: server.URL, Token: "tok"}
+	out, err := c.IngestApplication(context.Background(), IngestApplicationInput{
+		IdempotencyKey: "app-1",
+		Contact:        CreateContactInput{Email: "a@b.com"},
+		Case:           IngestCaseInput{Subject: "Application"},
+	})
+	if err != nil {
+		t.Fatalf("IngestApplication: %v", err)
+	}
+	if out.ContactID != "c1" || out.CaseID != "k1" {
+		t.Fatalf("unexpected result: %+v", out)
+	}
+	if method != http.MethodPost || path != CoreIngestApplicationPath {
+		t.Fatalf("IngestApplication hit %s %s", method, path)
+	}
+}
