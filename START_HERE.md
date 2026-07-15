@@ -142,10 +142,10 @@ config.
 If the extension owns an `ext_*` schema, prefer SDK database helpers like
 `extdb` instead of importing the platform's internal SQL wrappers.
 
-If you need shared host-side types such as auth context, store interfaces, or
-other platform-owned contracts, use the public Go packages under
-`github.com/movebigrocks/extension-sdk/extensionhost/...`, not anything under
-`github.com/movebigrocks/platform/...`.
+If you need core behavior, use `runtimehost.Client` and its JSON DTOs. Shared
+runtime concerns live in focused public packages such as `apierrors`, `extdb`,
+`runtimehttp`, and `runtimehost`. Do not import anything under
+`github.com/movebigrocks/platform/...` or copy core packages into an extension.
 
 Important rule for workspace-scoped admin pages:
 

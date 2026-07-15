@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	platformservices "github.com/movebigrocks/extension-sdk/extensionhost/platform/services"
+	"github.com/movebigrocks/extension-sdk/bundletrust"
 )
 
 type bundleEnvelope struct {
@@ -21,10 +21,10 @@ type bundleEnvelope struct {
 }
 
 type bundleTrustEnvelope struct {
-	KeyID     string                              `json:"keyID"`
-	Algorithm string                              `json:"algorithm,omitempty"`
-	Signature string                              `json:"signature"`
-	License   platformservices.BundleLicenseClaim `json:"license"`
+	KeyID     string                   `json:"keyID"`
+	Algorithm string                   `json:"algorithm,omitempty"`
+	Signature string                   `json:"signature"`
+	License   bundletrust.LicenseClaim `json:"license"`
 }
 
 type manifestSummary struct {
@@ -89,17 +89,17 @@ func main() {
 		exitf("manifest must include publisher, slug, and version")
 	}
 
-	license := platformservices.BundleLicenseClaim{
+	license := bundletrust.LicenseClaim{
 		Publisher: manifest.Publisher,
 		Slug:      manifest.Slug,
 		Version:   manifest.Version,
 	}
 	if strings.TrimSpace(*instanceID) != "" {
 		license.InstanceID = strings.TrimSpace(*instanceID)
-		license.TokenSHA256 = platformservices.ChecksumSHA256Hex([]byte(strings.TrimSpace(*licenseToken)))
+		license.TokenSHA256 = bundletrust.ChecksumSHA256Hex([]byte(strings.TrimSpace(*licenseToken)))
 	}
 
-	payload, err := platformservices.CanonicalSignedBundlePayload(envelope.Manifest, envelope.Assets, envelope.Migrations, license)
+	payload, err := bundletrust.CanonicalSignedBundlePayload(envelope.Manifest, envelope.Assets, envelope.Migrations, license)
 	if err != nil {
 		exitf("build signed payload: %v", err)
 	}

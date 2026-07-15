@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestClientCreateCaseRoundTrip(t *testing.T) {
@@ -164,5 +165,90 @@ func TestClientApplyCaseChangePath(t *testing.T) {
 	}
 	if method != http.MethodPost || path != CoreCasesPath+"/case-1/apply-change" {
 		t.Fatalf("ApplyCaseChange hit %s %s", method, path)
+	}
+}
+
+func TestClientObservabilityHostOperations(t *testing.T) {
+	type requestRecord struct {
+		method string
+		path   string
+		query  string
+		body   map[string]any
+	}
+	requests := make([]requestRecord, 0, 9)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		record := requestRecord{method: r.Method, path: r.URL.Path, query: r.URL.RawQuery}
+		if r.Body != nil {
+			_ = json.NewDecoder(r.Body).Decode(&record.body)
+		}
+		requests = append(requests, record)
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case CoreWorkspacesPath, CoreWorkspacesPath + "/by-ids":
+			_ = json.NewEncoder(w).Encode(workspaceListResponse{Workspaces: []HostWorkspace{{ID: "ws-1", Name: "One"}}})
+		case CoreCaseIssueLookupPath:
+			_ = json.NewEncoder(w).Encode(HostCase{ID: "case-1", WorkspaceID: "ws-1"})
+		case CoreCasesPath + "/case-1":
+			_ = json.NewEncoder(w).Encode(HostCase{ID: "case-1", WorkspaceID: "ws-1"})
+		default:
+			w.WriteHeader(http.StatusOK)
+		}
+	}))
+	defer server.Close()
+	c := &Client{BaseURL: server.URL, Token: "tok"}
+	ctx := context.Background()
+
+	if _, ok, err := c.GetCaseInWorkspace(ctx, "ws-1", "case-1"); err != nil || !ok {
+		t.Fatalf("GetCaseInWorkspace: ok=%v err=%v", ok, err)
+	}
+	status := "resolved"
+	if _, err := c.UpdateCase(ctx, "case-1", CaseUpdateInput{WorkspaceID: "ws-1", Status: &status}); err != nil {
+		t.Fatalf("UpdateCase: %v", err)
+	}
+	if err := c.MarkCaseResolvedInWorkspace(ctx, "ws-1", "case-1", time.Unix(10, 0).UTC()); err != nil {
+		t.Fatalf("MarkCaseResolvedInWorkspace: %v", err)
+	}
+	if err := c.LinkIssueToCase(ctx, "ws-1", "case-1", "issue-1", "project-1"); err != nil {
+		t.Fatalf("LinkIssueToCase: %v", err)
+	}
+	if err := c.UnlinkIssueFromCase(ctx, "ws-1", "case-1", "issue-1"); err != nil {
+		t.Fatalf("UnlinkIssueFromCase: %v", err)
+	}
+	if _, ok, err := c.GetCaseByIssueAndContact(ctx, "ws-1", "issue-1", "contact-1"); err != nil || !ok {
+		t.Fatalf("GetCaseByIssueAndContact: ok=%v err=%v", ok, err)
+	}
+	if got, err := c.ListWorkspaces(ctx); err != nil || len(got) != 1 {
+		t.Fatalf("ListWorkspaces: got=%v err=%v", got, err)
+	}
+	if got, err := c.GetWorkspacesByIDs(ctx, []string{"ws-1"}); err != nil || len(got) != 1 {
+		t.Fatalf("GetWorkspacesByIDs: got=%v err=%v", got, err)
+	}
+	if err := c.PublishEvent(ctx, PublishEventInput{WorkspaceID: "ws-1", EventType: "issue.created", Data: map[string]any{"IssueID": "issue-1"}}); err != nil {
+		t.Fatalf("PublishEvent: %v", err)
+	}
+
+	if got := requests[0]; got.method != http.MethodGet || got.path != CoreCasesPath+"/case-1" || got.query != "workspaceId=ws-1" {
+		t.Fatalf("GetCaseInWorkspace request = %+v", got)
+	}
+	if got := requests[1]; got.method != http.MethodPatch || got.body["workspaceId"] != "ws-1" {
+		t.Fatalf("UpdateCase request = %+v", got)
+	}
+	if got := requests[2]; got.method != http.MethodPost || got.path != CoreCasesPath+"/case-1/resolve" || got.body["workspaceId"] != "ws-1" {
+		t.Fatalf("MarkCaseResolved request = %+v", got)
+	}
+	if got := requests[3]; got.method != http.MethodPost || got.path != CoreCasesPath+"/case-1/issues" || got.body["issueId"] != "issue-1" {
+		t.Fatalf("LinkIssueToCase request = %+v", got)
+	}
+	if got := requests[4]; got.method != http.MethodDelete || got.path != CoreCasesPath+"/case-1/issues" || got.body["issueId"] != "issue-1" {
+		t.Fatalf("UnlinkIssueFromCase request = %+v", got)
+	}
+	if got := requests[5]; got.path != CoreCaseIssueLookupPath || got.query != "contactId=contact-1&issueId=issue-1&workspaceId=ws-1" {
+		t.Fatalf("GetCaseByIssueAndContact request = %+v", got)
+	}
+	if got := requests[7]; got.method != http.MethodPost || got.path != CoreWorkspacesPath+"/by-ids" {
+		t.Fatalf("GetWorkspacesByIDs request = %+v", got)
+	}
+	if got := requests[8]; got.method != http.MethodPost || got.path != CoreEventsPath || got.body["eventType"] != "issue.created" {
+		t.Fatalf("PublishEvent request = %+v", got)
 	}
 }

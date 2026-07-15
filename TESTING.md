@@ -402,6 +402,7 @@ The next useful layer to add over time is more reusable behavior harnessing:
 - public browser automation helpers
 - broader public Go test fixtures on top of the current host packages
 
-Today, use `github.com/movebigrocks/extension-sdk/extensionhost/...` for
-public test fixtures and contracts rather than importing anything from
+Today, use focused public packages such as `runtimehost`, `runtimehttp`,
+`testdb`, and `testing/sdktest` for contracts and fixtures. Extension tests
+should use fake host clients and must not import anything from
 `github.com/movebigrocks/platform/...`.

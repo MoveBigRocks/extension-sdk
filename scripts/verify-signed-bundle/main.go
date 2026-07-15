@@ -15,8 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	platformdomain "github.com/movebigrocks/extension-sdk/extensionhost/platform/domain"
-	platformservices "github.com/movebigrocks/extension-sdk/extensionhost/platform/services"
+	"github.com/movebigrocks/extension-sdk/bundletrust"
 )
 
 func main() {
@@ -47,7 +46,7 @@ func main() {
 	if err := json.Unmarshal(bundle, &envelope); err != nil {
 		exitf("decode bundle: %v", err)
 	}
-	var manifest platformdomain.ExtensionManifest
+	var manifest bundletrust.ManifestIdentity
 	if err := json.Unmarshal(envelope.Manifest, &manifest); err != nil {
 		exitf("decode manifest: %v", err)
 	}
@@ -61,7 +60,7 @@ func main() {
 		exitf("decode trusted publishers: %v", err)
 	}
 
-	verifier, err := platformservices.NewExtensionBundleTrustVerifier(strings.TrimSpace(*instanceID), true, trusted)
+	verifier, err := bundletrust.NewVerifier(strings.TrimSpace(*instanceID), true, trusted)
 	if err != nil {
 		exitf("build verifier: %v", err)
 	}

@@ -110,10 +110,9 @@ If you need a starting point for service-backed HTTP wiring, use the public SDK
 runtime helpers such as `runtimehttp` rather than copying first-party helper
 code into the extension repo.
 
-If the runtime needs platform-owned contracts like auth context, shared domain
-events, or store interfaces, import the public host-facing packages under
-`github.com/movebigrocks/extension-sdk/extensionhost/...` rather than reaching
-into `github.com/movebigrocks/platform/...`.
+If the runtime needs core behavior, call the language-neutral host API through
+`runtimehost.Client`. Keep extension domain and event payload types in the
+extension, and do not import platform auth, store, service, or domain packages.
 
 ## Validation Loop
 
