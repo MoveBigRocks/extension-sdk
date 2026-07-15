@@ -90,3 +90,39 @@ func TestClientCreateQueueAndUpdateCasePaths(t *testing.T) {
 		t.Fatalf("UpdateCase hit %s %s", method, path)
 	}
 }
+
+func TestClientAttachmentAndArtifactPaths(t *testing.T) {
+	var method, path string
+	var gotContent []byte
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		method, path = r.Method, r.URL.Path
+		if r.Method == http.MethodPost && r.URL.Path == CoreAttachmentsPath {
+			var in UploadAttachmentInput
+			_ = json.NewDecoder(r.Body).Decode(&in)
+			gotContent = in.Content
+			_ = json.NewEncoder(w).Encode(HostAttachment{ID: "att-1", Filename: in.Filename})
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+	c := &Client{BaseURL: server.URL, Token: "tok"}
+
+	att, err := c.UploadAttachment(context.Background(), UploadAttachmentInput{Filename: "r.pdf", Content: []byte("bytes")})
+	if err != nil {
+		t.Fatalf("UploadAttachment: %v", err)
+	}
+	if att.ID != "att-1" || method != http.MethodPost || path != CoreAttachmentsPath {
+		t.Fatalf("UploadAttachment hit %s %s -> %+v", method, path, att)
+	}
+	if string(gotContent) != "bytes" {
+		t.Fatalf("content did not round-trip through base64: %q", gotContent)
+	}
+
+	if err := c.PublishArtifact(context.Background(), PublishArtifactInput{Surface: "website", RelativePath: "i.html", Content: []byte("h")}); err != nil {
+		t.Fatalf("PublishArtifact: %v", err)
+	}
+	if method != http.MethodPost || path != CoreArtifactsPath {
+		t.Fatalf("PublishArtifact hit %s %s", method, path)
+	}
+}
