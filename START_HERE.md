@@ -24,9 +24,8 @@ Before using this SDK, make sure you already have:
 
 If you do not have those yet, stop here and use the deployment path first:
 
-- [MoveBigRocks/platform/docs/CUSTOMER_INSTANCE_SETUP.md](https://github.com/MoveBigRocks/platform/blob/main/docs/CUSTOMER_INSTANCE_SETUP.md)
-- [MoveBigRocks/platform/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md](https://github.com/MoveBigRocks/platform/blob/main/docs/INSTANCE_AND_EXTENSION_LIFECYCLE.md)
 - [movebigrocks.com/docs/self-host](https://movebigrocks.com/docs/self-host)
+- [MoveBigRocks/instance-template](https://github.com/MoveBigRocks/instance-template)
 
 Important boundary:
 
