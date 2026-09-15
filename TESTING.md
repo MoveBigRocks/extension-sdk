@@ -168,6 +168,12 @@ Examples for service-backed extensions:
 - test stage seeding, vote dedupe, or slug generation
 - test handler request/response behavior with `httptest`
 
+A runtime only trusts the identity headers the host forwards on a connection
+whose peer credentials it verified, so a request driven straight through
+`runtimehttp.DefaultEngine()` with `httptest` is refused with `403`. Wrap the
+request context in `runtimehttp.WithVerifiedPeer` to stand in for the socket
+listener, or test the handler directly with `gin.CreateTestContext`.
+
 This is the extension author’s fastest feedback loop.
 
 ### Layer 1: SDK contract verification

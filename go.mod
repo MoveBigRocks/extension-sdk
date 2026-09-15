@@ -14,6 +14,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0
 	github.com/oschwald/maxminddb-golang v1.13.1
 	go.uber.org/zap v1.27.1
+	golang.org/x/sys v0.39.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
@@ -47,7 +48,6 @@ require (
 	golang.org/x/arch v0.22.0 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )

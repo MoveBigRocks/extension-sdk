@@ -1,6 +1,7 @@
 package runtimehttp
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -46,6 +47,7 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	req = req.WithContext(WithVerifiedPeer(req.Context()))
 	req.Header.Set(runtimeproto.HeaderExtensionID, "ext_123")
 	req.Header.Set(runtimeproto.HeaderExtensionSlug, "sales-pipeline")
 	req.Header.Set(runtimeproto.HeaderExtensionPackageKey, "demandops/sales-pipeline")
@@ -100,6 +102,71 @@ func TestForwardedContextMiddlewareSetsCommonKeys(t *testing.T) {
 	if got := payload["workspace_slug"]; got != "demand-ops" {
 		t.Fatalf("expected workspace_slug demand-ops, got %#v", got)
 	}
+}
+
+func TestForwardedContextMiddlewareRefusesIdentityWithoutVerifiedPeer(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	engine := gin.New()
+	engine.Use(ForwardedContextMiddleware())
+	served := false
+	engine.GET("/test", func(c *gin.Context) {
+		served = true
+		c.Status(http.StatusOK)
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	req.Header.Set(runtimeproto.HeaderUserID, "usr_impersonated")
+	req.Header.Set(runtimeproto.HeaderWorkspaceID, "ws_victim")
+	req.Header.Set(runtimeproto.HeaderSessionContextJSON, `{"type":"workspace","workspace_id":"ws_victim","role":"super_admin"}`)
+
+	rec := httptest.NewRecorder()
+	engine.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403 for an unverified peer, got %d", rec.Code)
+	}
+	if served {
+		t.Fatal("handler ran for a request whose peer was never authenticated")
+	}
+}
+
+func TestForwardedContextMiddlewareKeepsUnverifiedPeerOutOfTenantScope(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	scoper := &recordingScoper{}
+	engine := gin.New()
+	engine.Use(ForwardedContextMiddleware())
+	engine.Use(TenantContext(scoper))
+	engine.GET("/test", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	req.Header.Set(runtimeproto.HeaderWorkspaceID, "ws_victim")
+
+	rec := httptest.NewRecorder()
+	engine.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403 for an unverified peer, got %d", rec.Code)
+	}
+	if scoper.workspaces != nil {
+		t.Fatalf("expected no tenant context to be set, got %v", scoper.workspaces)
+	}
+}
+
+// recordingScoper stands in for an extension store and records every workspace
+// the tenant middleware would have pinned row-level security to.
+type recordingScoper struct {
+	workspaces []string
+}
+
+func (s *recordingScoper) WithTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
+	return fn(ctx)
+}
+
+func (s *recordingScoper) SetTenantContext(_ context.Context, workspaceID string) error {
+	s.workspaces = append(s.workspaces, workspaceID)
+	return nil
 }
 
 func TestBuildBasePageDataDetectsAdminRoles(t *testing.T) {
