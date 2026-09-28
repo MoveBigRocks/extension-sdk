@@ -32,6 +32,9 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: go.sum
 
+      - name: Run SDK tests with race detection
+        run: GOWORK=off go test -race ./...
+
       - name: Validate template manifest and contract
         run: |
           "${RUNNER_TEMP}/mbr" extensions lint . --json
