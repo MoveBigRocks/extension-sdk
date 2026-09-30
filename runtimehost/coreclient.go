@@ -44,6 +44,7 @@ type HostCase struct {
 	Priority     string         `json:"priority,omitempty"`
 	Channel      string         `json:"channel,omitempty"`
 	Category     string         `json:"category,omitempty"`
+	AssignedToID string         `json:"assignedToId,omitempty"`
 	QueueID      string         `json:"queueId,omitempty"`
 	Tags         []string       `json:"tags,omitempty"`
 	ContactID    string         `json:"contactId,omitempty"`
